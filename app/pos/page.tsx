@@ -1,4 +1,6 @@
+"use client";
 import { AppSidebar } from "@/components/app-sidebar";
+import PurchaseOrdersTable from "@/components/po-list";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,20 +9,17 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import BudgetCards from "@/components/ui/budget-cards";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { getCurrentUser } from "@/convex/users";
+import { api } from "@/convex/_generated/api";
 import { UserButton } from "@clerk/nextjs";
-import { currentUser } from "@clerk/nextjs/server";
-import { useConvexAuth } from "convex/react";
+import { useQuery } from "convex/react";
 
-export default async function Page() {
-  const user = await currentUser();
+export default function AllPosPage() {
   return (
     <SidebarProvider
       style={
@@ -38,30 +37,15 @@ export default async function Page() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                  <BreadcrumbPage>Your PO&apos;s</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
           <UserButton />
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <h2 className="font-semibold text-xl"> Hey {user?.firstName}</h2>
-
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <BudgetCards
-              className="bg-muted/75 border-none shadow-none"
-              title="PO"
-            />
-            <BudgetCards
-              className="bg-muted/75 border-none shadow-none"
-              title="Emergency"
-            />
-            <BudgetCards
-              className="bg-muted/75 border-none shadow-none"
-              title="Extra"
-            />
-          </div>
+        <div className="p-4">
+          <PurchaseOrdersTable user="" />
         </div>
       </SidebarInset>
     </SidebarProvider>

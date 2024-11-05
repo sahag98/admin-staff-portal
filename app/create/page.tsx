@@ -1,4 +1,5 @@
 import { AppSidebar } from "@/components/app-sidebar";
+import { PoForm } from "@/components/po-form";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,20 +8,15 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import BudgetCards from "@/components/ui/budget-cards";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { getCurrentUser } from "@/convex/users";
 import { UserButton } from "@clerk/nextjs";
-import { currentUser } from "@clerk/nextjs/server";
-import { useConvexAuth } from "convex/react";
 
-export default async function Page() {
-  const user = await currentUser();
+export default function Page() {
   return (
     <SidebarProvider
       style={
@@ -38,31 +34,16 @@ export default async function Page() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                  <BreadcrumbPage>Create PO</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
           <UserButton />
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <h2 className="font-semibold text-xl"> Hey {user?.firstName}</h2>
-
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <BudgetCards
-              className="bg-muted/75 border-none shadow-none"
-              title="PO"
-            />
-            <BudgetCards
-              className="bg-muted/75 border-none shadow-none"
-              title="Emergency"
-            />
-            <BudgetCards
-              className="bg-muted/75 border-none shadow-none"
-              title="Extra"
-            />
-          </div>
-        </div>
+        <section className=" flex justify-center h-full">
+          <PoForm />
+        </section>
       </SidebarInset>
     </SidebarProvider>
   );
