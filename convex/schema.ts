@@ -16,7 +16,7 @@ export default defineSchema({
     nonbudget_approval: v.optional(v.string()),
     amount: v.number(),
     status: v.string(),
-    message: v.string(),
+    message: v.optional(v.string()),
     user: v.id("users"),
     fileId: v.optional(v.string()),
     fileName: v.optional(v.string()),
@@ -29,4 +29,24 @@ export default defineSchema({
     // this the Clerk ID, stored in the subject JWT field
     externalId: v.string(),
   }).index("byExternalId", ["externalId"]),
+  budgets: defineTable({
+    userId: v.id("users"),
+    year: v.number(),
+    monthlyBudgets: v.array(
+      v.object({
+        month: v.string(),
+        proposedBudget: v.number(),
+        actualBudget: v.optional(v.number()),
+        itemBudgets: v.optional(
+          v.array(
+            v.object({
+              title: v.string(),
+              proposed: v.number(),
+              actual: v.optional(v.number()),
+            })
+          )
+        ),
+      })
+    ),
+  }).index("by_user_year", ["userId", "year"]),
 });

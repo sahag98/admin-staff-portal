@@ -103,10 +103,10 @@ export const formSchema = z.object({
   ]),
   isBudgeted: z.string(),
   budget_num: z.number(),
-  item_name: z.string().min(2).max(150),
+  item_name: z.string({ required_error: "Required" }).min(2).max(150),
   nonbudget_approval: z.optional(z.string()),
   amount: z.number(),
-  message: z.string().min(2).max(300),
+  message: z.optional(z.string().min(2).max(300)),
 });
 
 export function PoForm() {
@@ -837,9 +837,7 @@ export function PoForm() {
         />
         <div className="space-y-4">
           <div className="flex flex-col">
-            <Label className="text-base">
-              Attachments <span className="text-red-500">*</span>
-            </Label>
+            <Label className="text-base">Attachments</Label>
             {file && (
               <div className="flex text-blue-500 items-center gap-2">
                 <File size={15} />

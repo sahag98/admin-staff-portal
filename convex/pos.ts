@@ -16,7 +16,7 @@ export const createPO = mutation({
     isBudgeted: v.string(),
     budget_num: v.number(),
     item_name: v.string(),
-    message: v.string(),
+    message: v.optional(v.string()),
     nonbudget_approval: v.optional(v.string()),
     amount: v.number(),
     status: v.string(),

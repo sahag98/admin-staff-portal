@@ -11,8 +11,9 @@ export async function sendEmail(
   const resend = new Resend("re_gLWkB4j8_696ABZnRK56f1zEieEeZVUt2");
 
   const { data, error } = await resend.emails.send({
-    from: "Juan <onboarding@resend.dev>",
+    from: `Juan <onboarding@resend.dev>`,
     to: ["arzsahag@gmail.com"],
+    cc: ["sahagking@gmail.com"],
     subject: "New Purchase Order",
     react: EmailTemplate(values, po_id),
   });

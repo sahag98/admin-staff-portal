@@ -1,5 +1,6 @@
 "use client";
 
+import { sendUpdate } from "@/actions/send-update";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -18,7 +19,7 @@ import {
 } from "@/components/ui/sidebar";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { useQuery, useAction } from "convex/react";
+import { useQuery, useAction, useMutation } from "convex/react";
 import {
   ArrowLeft,
   Calendar,
@@ -47,6 +48,40 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
 
   const getFileUrl = useAction(api.files.getUrl);
 
+  const updateStatus = useMutation(api.pos.updatePOStatus);
+
+  const handleApprove = async () => {
+    try {
+      // console.log(currentPO);
+
+      // if (orderId) {
+      //   const curr = await getCurrentPO({ poId: orderId });
+      // }
+
+      const po = await updateStatus({ po_id: id, status: "approved" });
+
+      if (po) {
+        sendUpdate(po?.email, po.item_name, po.amount, "Approved");
+      }
+    } catch (error) {
+      console.error("Failed to approve PO:", error);
+      // You might want to add proper error handling/notification here
+    }
+  };
+
+  const handleDeny = async () => {
+    try {
+      const po = await updateStatus({ po_id: id, status: "denied" });
+
+      if (po) {
+        sendUpdate(po.email, po.item_name, po.amount, "Denied");
+      }
+    } catch (error) {
+      console.error("Failed to deny PO:", error);
+      // You might want to add proper error handling/notification here
+    }
+  };
+
   return (
     <SidebarProvider
       style={
@@ -72,7 +107,10 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
           <div className="mx-auto max-w-2xl space-y-6">
             <div className="flex items-center justify-between">
               {isAdmin ? (
-                <Button onClick={() => router.back()} variant={"ghost"}>
+                <Button
+                  onClick={() => router.push("/all-pos")}
+                  variant={"ghost"}
+                >
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Go Back
                 </Button>
@@ -242,6 +280,20 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
                   >
                     Download Attachment
                   </Button>
+                  {isAdmin && (
+                    <>
+                      {po?.status !== "denied" && (
+                        <Button variant="destructive" onClick={handleDeny}>
+                          Deny
+                        </Button>
+                      )}
+                      {po?.status !== "approved" && (
+                        <Button variant="success" onClick={handleApprove}>
+                          Approve
+                        </Button>
+                      )}
+                    </>
+                  )}
                 </div>
               </CardContent>
             </Card>

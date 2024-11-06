@@ -83,7 +83,15 @@ export const EmailTemplate = (
               Message: {message}
             </Text>
             <Text>Submitted By: {email}</Text>
-            <Link href={`http://localhost:3000/pos/${poId}`}>View</Link>
+            <Hr className="border border-solid border-[#c0c0c0] my-[10px] mx-0 w-full" />
+            <Section cellSpacing={3} className="w-full">
+              <Link
+                className="bg-gray-900 p-3 text-white mx-auto w-48 rounded-md"
+                href={`http://localhost:3000/pos/${poId}?admin=true`}
+              >
+                View
+              </Link>
+            </Section>
 
             {/* <Text className="text-[#2f2d51] text-[15px] font-medium">
               Praying for you,

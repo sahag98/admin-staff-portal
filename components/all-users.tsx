@@ -11,7 +11,7 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import ApprovalBanner from "./approval-banner";
 
-export default function AllUsers() {
+export default function AllUsers({ budget }: { budget: boolean }) {
   const [searchTerm, setSearchTerm] = useState("");
 
   const users = useQuery(api.users.getAllUsers);
@@ -62,10 +62,12 @@ export default function AllUsers() {
               </div>
             </CardHeader>
             <CardContent className="flex items-end justify-between">
-              <Link href={`/all-pos/${user._id}`}>
-                <Button>View PO&apos;s</Button>
+              <Link
+                href={budget ? `/budget/${user._id}` : `/all-pos/${user._id}`}
+              >
+                <Button>{budget ? "View Budget" : "View POs"}</Button>
               </Link>
-              <ApprovalBanner user={user} />
+              {!budget && <ApprovalBanner user={user} />}
             </CardContent>
           </Card>
         ))}

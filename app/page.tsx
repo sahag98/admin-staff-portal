@@ -18,6 +18,7 @@ import { getCurrentUser } from "@/convex/users";
 import { UserButton } from "@clerk/nextjs";
 import { currentUser } from "@clerk/nextjs/server";
 import { useConvexAuth } from "convex/react";
+import { Construction } from "lucide-react";
 
 export default async function Page() {
   const user = await currentUser();
@@ -47,20 +48,17 @@ export default async function Page() {
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
           <h2 className="font-semibold text-xl"> Hey {user?.firstName}</h2>
+          <p className="font-semibold">
+            Welcome to our new platform for purchase orders, budgets and more!
+          </p>
+          <p>
+            Go ahead and click through each sidebar tab to get familiar with all
+            its functionalities.
+          </p>
+          <div className="flex bg-secondary rounded justify-center items-center flex-col gap-2 flex-1">
+            <Construction size={50} />
 
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <BudgetCards
-              className="bg-muted/75 border-none shadow-none"
-              title="PO"
-            />
-            <BudgetCards
-              className="bg-muted/75 border-none shadow-none"
-              title="Emergency"
-            />
-            <BudgetCards
-              className="bg-muted/75 border-none shadow-none"
-              title="Extra"
-            />
+            <h2>This page is not finished yet.</h2>
           </div>
         </div>
       </SidebarInset>

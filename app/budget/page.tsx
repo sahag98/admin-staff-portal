@@ -1,5 +1,6 @@
 import AllUsers from "@/components/all-users";
 import { AppSidebar } from "@/components/app-sidebar";
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -14,7 +15,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { UserButton } from "@clerk/nextjs";
 
 export default function Page() {
   return (
@@ -27,21 +27,19 @@ export default function Page() {
     >
       <AppSidebar />
       <SidebarInset>
-        <header className="flex h-16 w-full justify-between shrink-0 items-center gap-2 px-4">
-          <div className="flex items-center">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbPage>All PO&apos;s</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-          <UserButton />
+        <header className="flex h-16 shrink-0 items-center gap-2 px-4">
+          <SidebarTrigger className="-ml-1" />
+          <Separator orientation="vertical" className="mr-2 h-4" />
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbPage>Budget</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
         </header>
-        <AllUsers budget={false} />
+        <AllUsers budget={true} />
+        {/* <BudgetPlanner /> */}
       </SidebarInset>
     </SidebarProvider>
   );

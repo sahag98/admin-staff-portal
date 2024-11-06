@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { GalleryVerticalEnd } from "lucide-react";
+import { GalleryVerticalEnd, LogOut } from "lucide-react";
 
 import {
   Sidebar,
@@ -58,6 +58,10 @@ const data = {
     {
       title: "Your PO's",
       url: "/pos",
+    },
+    {
+      title: "Your Budget",
+      url: "/budget",
     },
 
     // items: [
@@ -183,7 +187,7 @@ const data = {
 
 export function AppSidebar() {
   const pathname = usePathname();
-
+  console.log(pathname);
   const userInfo = useQuery(api.users.current);
 
   return (
@@ -218,11 +222,17 @@ export function AppSidebar() {
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton asChild>
                   <Link
-                    href={item.url}
+                    href={
+                      item.url === "/budget"
+                        ? `${item.url}/${userInfo?._id}`
+                        : item.url
+                    }
                     className={cn(
                       "font-medium",
-                      pathname === item.url &&
-                        "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+                      (pathname === item.url && pathname !== "/budget") ||
+                        pathname === `${item.url}/${userInfo?._id}`
+                        ? "bg-primary text-primary-foreground"
+                        : "hover:bg-sidebar-accent transition-all"
                     )}
                   >
                     {item.title}
@@ -238,8 +248,9 @@ export function AppSidebar() {
                       href={"/all-pos"}
                       className={cn(
                         "font-medium",
-                        pathname === "all-pos" &&
-                          "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+                        pathname === "/all-pos"
+                          ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+                          : "hover:bg-sidebar-accent transition-all"
                       )}
                     >
                       All PO&apos;s
@@ -249,10 +260,10 @@ export function AppSidebar() {
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
                     <Link
-                      href={"/all-pos"}
+                      href={"/budget"}
                       className={cn(
                         "font-medium",
-                        pathname === "all-pos" &&
+                        pathname === "/budget" &&
                           "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
                       )}
                     >
@@ -267,7 +278,10 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <SignOutButton>
-          <Button>Sign out</Button>
+          <Button>
+            <LogOut />
+            Sign out
+          </Button>
         </SignOutButton>
       </SidebarFooter>
     </Sidebar>
