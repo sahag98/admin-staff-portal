@@ -546,7 +546,6 @@ export function PoForm() {
                               value={event}
                               key={event}
                               onSelect={() => {
-                                //@ts-ignore
                                 form.setValue("event_name", event);
                                 setIsEventOpen(false);
                               }}

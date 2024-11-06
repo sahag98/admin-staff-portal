@@ -39,9 +39,9 @@ export default function PurchaseOrdersTable() {
   const sortedOrders = yourPOs?.sort((a, b) => {
     if (sortColumn === null) return 0;
 
-    //@ts-ignore
+    //@ts-expect-error
     const aValue = a[sortColumn];
-    //@ts-ignore
+    //@ts-expect-error
     const bValue = b[sortColumn];
     if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
     if (aValue > bValue) return sortDirection === "asc" ? 1 : -1;
