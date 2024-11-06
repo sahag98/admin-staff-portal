@@ -2,13 +2,11 @@
 import { useState } from "react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
-import { Checkbox } from "./ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import {
@@ -27,12 +25,11 @@ import {
   WalletCards,
   X,
 } from "lucide-react";
-import { Doc, Id } from "@/convex/_generated/dataModel";
 import { useRouter } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
-export default function PurchaseOrdersTable({ user }: { user: string }) {
+export default function PurchaseOrdersTable() {
   const yourPOs = useQuery(api.pos.getUserPos);
 
   const [sortColumn, setSortColumn] = useState<string | null>(null);

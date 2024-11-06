@@ -4,26 +4,18 @@ import { z } from "zod";
 
 import {
   Body,
-  Button,
   Container,
-  Column,
   Head,
   Heading,
   Hr,
   Html,
-  Img,
   Link,
   Preview,
-  Row,
   Section,
   Text,
   Tailwind,
 } from "@react-email/components";
 import { Id } from "@/convex/_generated/dataModel";
-
-interface EmailTemplateProps {
-  firstName: string;
-}
 
 export const EmailTemplate = (
   values: z.infer<typeof formSchema>,

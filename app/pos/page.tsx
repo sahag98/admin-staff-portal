@@ -4,10 +4,8 @@ import PurchaseOrdersTable from "@/components/po-list";
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -15,9 +13,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { api } from "@/convex/_generated/api";
 import { UserButton } from "@clerk/nextjs";
-import { useQuery } from "convex/react";
 
 export default function AllPosPage() {
   return (

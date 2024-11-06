@@ -5,7 +5,6 @@ import { z } from "zod";
 import { useState } from "react";
 import {
   Command,
-  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
@@ -16,7 +15,6 @@ import { Button } from "./ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -26,8 +24,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Input } from "./ui/input";
 import { api } from "@/convex/_generated/api";
 import { useMutation, useQuery, useAction } from "convex/react";
-import { User } from "@clerk/nextjs/server";
-import { useAuth, useUser } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -47,7 +44,6 @@ import { cn } from "@/lib/utils";
 import { Label } from "./ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "./ui/textarea";
-import { Resend } from "resend";
 import { sendEmail } from "@/actions/send-email";
 
 export const formSchema = z.object({

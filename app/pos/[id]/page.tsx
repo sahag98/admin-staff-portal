@@ -28,7 +28,7 @@ import {
   DollarSign,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 
 const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {

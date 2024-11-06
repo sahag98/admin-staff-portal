@@ -1,32 +1,17 @@
 import * as React from "react";
-import { formSchema } from "./po-form";
-import { z } from "zod";
 
 import {
   Body,
-  Button,
   Container,
-  Column,
   Head,
   Heading,
-  Hr,
   Html,
-  Img,
-  Link,
   Preview,
-  Row,
-  Section,
   Text,
   Tailwind,
 } from "@react-email/components";
-import { Id } from "@/convex/_generated/dataModel";
-
-interface EmailTemplateProps {
-  firstName: string;
-}
 
 export const UpdateTemplate = (
-  email: string,
   item: string,
   amount: number,
   status: string

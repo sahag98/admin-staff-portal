@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
-import { Checkbox } from "./ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,7 +26,7 @@ import {
   WalletCards,
   X,
 } from "lucide-react";
-import { Doc, Id } from "@/convex/_generated/dataModel";
+import { Id } from "@/convex/_generated/dataModel";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";

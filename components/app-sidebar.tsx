@@ -1,6 +1,6 @@
 "use client";
 import * as React from "react";
-import { GalleryVerticalEnd, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 
 import {
   Sidebar,
@@ -11,9 +11,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { SignOutButton } from "@clerk/nextjs";
 import { Button } from "./ui/button";
@@ -187,7 +184,7 @@ const data = {
 
 export function AppSidebar() {
   const pathname = usePathname();
-  console.log(pathname);
+
   const userInfo = useQuery(api.users.current);
 
   return (
