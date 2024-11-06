@@ -11,7 +11,7 @@ export default defineSchema({
     event_name: v.string(),
     ministry: v.string(),
     isBudgeted: v.string(),
-    budget_num: v.number(),
+    budget_num: v.optional(v.number()),
     item_name: v.string(),
     nonbudget_approval: v.optional(v.string()),
     amount: v.number(),

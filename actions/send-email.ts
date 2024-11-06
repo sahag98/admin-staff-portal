@@ -12,7 +12,7 @@ export async function sendEmail(
 
   const { data, error } = await resend.emails.send({
     from: `Juan <onboarding@resend.dev>`,
-    to: ["arzsahag@gmail.com"],
+    to: ["sarona.a@findnewlife.church"],
     cc: ["sahagking@gmail.com"],
     subject: "New Purchase Order",
     react: EmailTemplate(values, po_id),

@@ -76,7 +76,7 @@ export const EmailTemplate = (
             <Section cellSpacing={3} className="w-full">
               <Link
                 className="bg-gray-900 p-3 text-white mx-auto w-48 rounded-md"
-                href={`http://localhost:3000/pos/${poId}?admin=true`}
+                href={`https://new-life-po.vercel.app/pos/${poId}?admin=true`}
               >
                 View
               </Link>
