@@ -12,6 +12,7 @@ import {
 } from "@react-email/components";
 
 export const UpdateTemplate = (
+  email: string,
   item: string,
   amount: number,
   status: string
@@ -47,6 +48,9 @@ export const UpdateTemplate = (
             </Text>
             <Text className="text-black text-[15px] leading-[24px]">
               Amount: ${amount.toFixed(2)}
+            </Text>
+            <Text className="text-black text-[13px] leading-[24px]">
+              PO was submitted by: {email}
             </Text>
 
             {/* <Text className="text-[#2f2d51] text-[15px] font-medium">
