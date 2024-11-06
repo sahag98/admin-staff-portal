@@ -41,7 +41,7 @@ export default function AllPosPage() {
           <UserButton />
         </header>
         <div className="p-4">
-          <PurchaseOrdersTable user="" />
+          <PurchaseOrdersTable />
         </div>
       </SidebarInset>
     </SidebarProvider>
