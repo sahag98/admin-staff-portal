@@ -1,4 +1,9 @@
-import { internalMutation, query, QueryCtx } from "./_generated/server";
+import {
+  internalMutation,
+  query,
+  QueryCtx,
+  mutation,
+} from "./_generated/server";
 import { UserJSON } from "@clerk/backend";
 import { v, Validator } from "convex/values";
 
@@ -137,3 +142,140 @@ export const getUserById = query({
 //     return user;
 //   },
 // });
+
+export const addBudgetItem = mutation({
+  args: {
+    userId: v.id("users"),
+    title: v.string(),
+    budget_num: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    // Verify admin status
+    const currentUser = await ctx.db
+      .query("users")
+      .withIndex("byExternalId", (q) => q.eq("externalId", identity.subject))
+      .first();
+
+    if (!currentUser || currentUser.role !== "admin") {
+      throw new Error("Unauthorized: Only admins can manage budget items");
+    }
+
+    const user = await ctx.db.get(args.userId);
+    if (!user) throw new Error("User not found");
+
+    const budgetItems = user.budgetItems || [];
+
+    // Check if budget_num already exists
+    if (budgetItems.some((item) => item.budget_num === args.budget_num)) {
+      throw new Error("Budget number already exists");
+    }
+
+    await ctx.db.patch(args.userId, {
+      budgetItems: [
+        ...budgetItems,
+        { title: args.title, budget_num: args.budget_num },
+      ],
+      po_nums: [...(user.po_nums || []), args.budget_num],
+    });
+  },
+});
+
+export const deleteBudgetItem = mutation({
+  args: {
+    userId: v.id("users"),
+    budget_num: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    // Verify admin status
+    const currentUser = await ctx.db
+      .query("users")
+      .withIndex("byExternalId", (q) => q.eq("externalId", identity.subject))
+      .first();
+
+    if (!currentUser || currentUser.role !== "admin") {
+      throw new Error("Unauthorized: Only admins can manage budget items");
+    }
+
+    const user = await ctx.db.get(args.userId);
+    if (!user) throw new Error("User not found");
+
+    const budgetItems = user.budgetItems || [];
+    const updatedBudgetItems = budgetItems.filter(
+      (item) => item.budget_num !== args.budget_num
+    );
+
+    const updatedPoNums = (user.po_nums || []).filter(
+      (num) => num !== args.budget_num
+    );
+
+    await ctx.db.patch(args.userId, {
+      budgetItems: updatedBudgetItems,
+      po_nums: updatedPoNums,
+    });
+  },
+});
+
+export const editBudgetItem = mutation({
+  args: {
+    userId: v.id("users"),
+    oldBudgetNum: v.number(),
+    title: v.string(),
+    budget_num: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    // Verify admin status
+    const currentUser = await ctx.db
+      .query("users")
+      .withIndex("byExternalId", (q) => q.eq("externalId", identity.subject))
+      .first();
+
+    if (!currentUser || currentUser.role !== "admin") {
+      throw new Error("Unauthorized: Only admins can manage budget items");
+    }
+
+    const user = await ctx.db.get(args.userId);
+    if (!user) throw new Error("User not found");
+
+    const budgetItems = user.budgetItems || [];
+
+    // Check if new budget_num already exists (except for the item being edited)
+    if (
+      args.oldBudgetNum !== args.budget_num &&
+      budgetItems.some((item) => item.budget_num === args.budget_num)
+    ) {
+      throw new Error("Budget number already exists");
+    }
+
+    // Update the budget item
+    const updatedBudgetItems = budgetItems.map((item) =>
+      item.budget_num === args.oldBudgetNum
+        ? { title: args.title, budget_num: args.budget_num }
+        : item
+    );
+
+    // Update po_nums array
+    const updatedPoNums = user.po_nums.map((num) =>
+      num === args.oldBudgetNum ? args.budget_num : num
+    );
+
+    await ctx.db.patch(args.userId, {
+      budgetItems: updatedBudgetItems,
+      po_nums: updatedPoNums,
+    });
+  },
+});

@@ -26,7 +26,14 @@ export default defineSchema({
     budget: v.number(),
     role: v.string(),
     po_nums: v.array(v.number()),
-    // this the Clerk ID, stored in the subject JWT field
+    budgetItems: v.optional(
+      v.array(
+        v.object({
+          title: v.string(),
+          budget_num: v.number(),
+        })
+      )
+    ),
     externalId: v.string(),
   }).index("byExternalId", ["externalId"]),
   budgets: defineTable({

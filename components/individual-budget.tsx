@@ -24,6 +24,14 @@ import { Input } from "@/components/ui/input";
 import { Id } from "@/convex/_generated/dataModel";
 import { useMutation } from "convex/react";
 import { Button } from "@/components/ui/button";
+import { Plus, Trash2, Pencil } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const months = [
   "January",
@@ -42,33 +50,124 @@ const months = [
 
 const years = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
 
-// export const mockBudgetItems = [
-//   "Camera Equipment",
-//   "Lighting Equipment",
-//   "Audio Equipment",
-//   "Software Licenses",
-//   "Studio Rental",
-//   "Production Staff",
-//   "Post-Production Tools",
-//   "Training & Development",
-//   "Equipment Maintenance",
-//   "Miscellaneous Production Costs",
-// ];
-
-export const mockBudgetItems = [
-  { title: "Squarespace Website", budget_num: 100 },
-  { title: "Squarespace Domain", budget_num: 101 },
-  { title: "Restream", budget_num: 102 },
-  { title: "Dropbox Team", budget_num: 103 },
-  { title: "Microsoft Office", budget_num: 104 },
-  { title: "ProPresenter 7", budget_num: 105 },
-  { title: "SundaySocial", budget_num: 106 },
-  { title: "Apple Music", budget_num: 107 },
-];
-
 const calculateVariance = (proposed: number, actual: number): number => {
   return proposed - (actual || 0);
 };
+
+function AddBudgetItemDialog({
+  userId,
+  onClose,
+}: {
+  userId: Id<"users">;
+  onClose: () => void;
+}) {
+  const [title, setTitle] = useState("");
+  const [budgetNum, setBudgetNum] = useState("");
+  const addItem = useMutation(api.users.addBudgetItem);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await addItem({
+        userId,
+        title,
+        budget_num: parseInt(budgetNum),
+      });
+      onClose();
+    } catch (error) {
+      console.error("Failed to add budget item:", error);
+    }
+  };
+
+  return (
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Add Budget Item</DialogTitle>
+      </DialogHeader>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="text-sm font-medium">Title</label>
+          <Input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter item title"
+            required
+          />
+        </div>
+        <div>
+          <label className="text-sm font-medium">Budget Number</label>
+          <Input
+            type="number"
+            value={budgetNum}
+            onChange={(e) => setBudgetNum(e.target.value)}
+            placeholder="Enter budget number"
+            required
+          />
+        </div>
+        <Button type="submit">Add Item</Button>
+      </form>
+    </DialogContent>
+  );
+}
+
+function EditBudgetItemDialog({
+  userId,
+  item,
+  onClose,
+}: {
+  userId: Id<"users">;
+  item: { title: string; budget_num: number };
+  onClose: () => void;
+}) {
+  const [title, setTitle] = useState(item.title);
+  const [budgetNum, setBudgetNum] = useState(item.budget_num.toString());
+  const editItem = useMutation(api.users.editBudgetItem);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await editItem({
+        userId,
+        oldBudgetNum: item.budget_num,
+        title,
+        budget_num: parseInt(budgetNum),
+      });
+      onClose();
+    } catch (error) {
+      console.error("Failed to edit budget item:", error);
+    }
+  };
+
+  return (
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Edit Budget Item</DialogTitle>
+      </DialogHeader>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="text-sm font-medium">Title</label>
+          <Input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter item title"
+            required
+          />
+        </div>
+        <div>
+          <label className="text-sm font-medium">Budget Number</label>
+          <Input
+            type="number"
+            value={budgetNum}
+            onChange={(e) => setBudgetNum(e.target.value)}
+            placeholder="Enter budget number"
+            required
+          />
+        </div>
+        <Button type="submit">Save Changes</Button>
+      </form>
+    </DialogContent>
+  );
+}
 
 export default function IndividualBudget({ userId }: { userId: Id<"users"> }) {
   const userInfo = useQuery(api.users.current);
@@ -90,27 +189,41 @@ export default function IndividualBudget({ userId }: { userId: Id<"users"> }) {
     [key: string]: { proposed: number; actual: number };
   }>({});
 
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const deleteItem = useMutation(api.users.deleteBudgetItem);
+
+  const budgetItems = user?.budgetItems || [];
+
+  const handleDeleteItem = async (budget_num: number) => {
+    try {
+      await deleteItem({
+        userId,
+        budget_num,
+      });
+    } catch (error) {
+      console.error("Failed to delete budget item:", error);
+    }
+  };
+
   useEffect(() => {
     setEditedBudgets({});
     setIsEditing(false);
   }, [selectedYear, selectedMonth]);
-
-  if (!user) return <div>Loading...</div>;
 
   const monthlyBudget = budget?.monthlyBudgets.find(
     (mb) => mb.month === selectedMonth
   ) || {
     proposedBudget: 0,
     actualBudget: 0,
-    itemBudgets: mockBudgetItems.map((title) => ({
-      title,
+    itemBudgets: budgetItems.map((item) => ({
+      title: item.title,
       proposed: 0,
       actual: 0,
     })),
   };
 
   const handleSave = async () => {
-    const itemBudgets = mockBudgetItems.map((item, index) => {
+    const itemBudgets = budgetItems.map((item, index) => {
       const currentEdits = editedBudgets[index];
       const currentBudgetItem = monthlyBudget.itemBudgets?.[index];
 
@@ -119,11 +232,11 @@ export default function IndividualBudget({ userId }: { userId: Id<"users"> }) {
         proposed:
           currentEdits?.proposed ??
           currentBudgetItem?.proposed ??
-          monthlyBudget.proposedBudget / mockBudgetItems.length,
+          monthlyBudget.proposedBudget / budgetItems.length,
         actual:
           currentEdits?.actual ??
           currentBudgetItem?.actual ??
-          (monthlyBudget.actualBudget || 0) / mockBudgetItems.length,
+          (monthlyBudget.actualBudget || 0) / budgetItems.length,
       };
     });
 
@@ -166,22 +279,28 @@ export default function IndividualBudget({ userId }: { userId: Id<"users"> }) {
           type === "proposed"
             ? numValue
             : prev[itemIndex]?.proposed ||
-              monthlyBudget.proposedBudget / mockBudgetItems.length,
+              monthlyBudget.proposedBudget / budgetItems.length,
         actual:
           type === "actual"
             ? numValue
             : prev[itemIndex]?.actual ||
-              (monthlyBudget.actualBudget || 0) / mockBudgetItems.length,
+              (monthlyBudget.actualBudget || 0) / budgetItems.length,
       },
     }));
   };
 
   // Calculate totals
   const totalProposed =
-    mockBudgetItems.length *
-    (monthlyBudget.proposedBudget / mockBudgetItems.length);
+    budgetItems.length * (monthlyBudget.proposedBudget / budgetItems.length);
   const totalActual = monthlyBudget.actualBudget || 0;
   const totalVariance = calculateVariance(totalProposed, totalActual);
+
+  const [editingItem, setEditingItem] = useState<{
+    title: string;
+    budget_num: number;
+  } | null>(null);
+
+  if (!user) return <div>Loading...</div>;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -245,6 +364,22 @@ export default function IndividualBudget({ userId }: { userId: Id<"users"> }) {
           </div>
         </CardHeader>
         <CardContent>
+          {userInfo?.role === "admin" && (
+            <div className="mb-4">
+              <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Budget Item
+                  </Button>
+                </DialogTrigger>
+                <AddBudgetItemDialog
+                  userId={userId}
+                  onClose={() => setIsAddDialogOpen(false)}
+                />
+              </Dialog>
+            </div>
+          )}
           <Table>
             <TableHeader>
               <TableRow>
@@ -256,14 +391,13 @@ export default function IndividualBudget({ userId }: { userId: Id<"users"> }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {mockBudgetItems.map((item, index) => {
+              {budgetItems.map((item, index) => {
                 const budgetItem = monthlyBudget.itemBudgets?.[index] || {
-                  title: item,
+                  title: item.title,
                   po_number: item.budget_num,
-                  proposed:
-                    monthlyBudget.proposedBudget / mockBudgetItems.length,
+                  proposed: monthlyBudget.proposedBudget / budgetItems.length,
                   actual:
-                    (monthlyBudget.actualBudget || 0) / mockBudgetItems.length,
+                    (monthlyBudget.actualBudget || 0) / budgetItems.length,
                 };
 
                 const itemProposed =
@@ -311,6 +445,26 @@ export default function IndividualBudget({ userId }: { userId: Id<"users"> }) {
                     >
                       ${variance.toFixed(2)}
                     </TableCell>
+                    {userInfo?.role === "admin" && (
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setEditingItem(item)}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteItem(item.budget_num)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    )}
                   </TableRow>
                 );
               })}
@@ -330,13 +484,25 @@ export default function IndividualBudget({ userId }: { userId: Id<"users"> }) {
                     totalVariance < 0 ? "text-red-500" : "text-green-500"
                   }`}
                 >
-                  ${totalVariance.toFixed(2)}
+                  ${totalVariance?.toFixed(2)}
                 </TableCell>
               </TableRow>
             </TableFooter>
           </Table>
         </CardContent>
       </Card>
+      <Dialog
+        open={editingItem !== null}
+        onOpenChange={(open) => !open && setEditingItem(null)}
+      >
+        {editingItem && (
+          <EditBudgetItemDialog
+            userId={userId}
+            item={editingItem}
+            onClose={() => setEditingItem(null)}
+          />
+        )}
+      </Dialog>
     </div>
   );
 }
