@@ -9,6 +9,14 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -82,6 +90,19 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
     }
   };
 
+  const handleVoid = async () => {
+    try {
+      const po = await updateStatus({ po_id: id, status: "voided" });
+
+      if (po) {
+        sendUpdate(po.email, po.item_name, po.amount, "Voided");
+      }
+    } catch (error) {
+      console.error("Failed to void PO:", error);
+      // You might want to add proper error handling/notification here
+    }
+  };
+
   return (
     <SidebarProvider
       style={
@@ -130,7 +151,9 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
                     ? "default"
                     : po?.status === "denied"
                       ? "destructive"
-                      : "secondary"
+                      : po?.status === "voided"
+                        ? "outline"
+                        : "secondary"
                 }
                 className="h-6"
               >
@@ -139,7 +162,9 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
                   ? "Approved"
                   : po?.status === "denied"
                     ? "Denied"
-                    : "Pending"}
+                    : po?.status === "voided"
+                      ? "Voided"
+                      : "Pending"}
               </Badge>
             </div>
 
@@ -148,19 +173,33 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
                 <h1 className="text-2xl font-bold">Purchase Order</h1>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="space-y-2">
-                    <div className="text-sm text-muted-foreground">Item(s)</div>
-                    <div className="font-medium">{po?.item_name}</div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="text-sm text-muted-foreground">Amount</div>
-                    <div className="flex items-center font-medium">
-                      <DollarSign className="mr-1 h-4 w-4" />
-                      {po?.amount.toFixed(2)}
-                    </div>
-                  </div>
-                </div>
+                <Table className="bg-secondary rounded-md">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Item Name</TableHead>
+                      <TableHead>Quantity</TableHead>
+                      <TableHead>Price</TableHead>
+                      <TableHead>Total</TableHead>
+                      <TableHead></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {po?.item_name?.map((item, index) => (
+                      <TableRow key={index}>
+                        <TableCell>
+                          <p>{item.name}</p>
+                        </TableCell>
+                        <TableCell>
+                          <p>{item.quantity}</p>
+                        </TableCell>
+                        <TableCell>
+                          <p>${item.price}</p>
+                        </TableCell>
+                        <TableCell>${item.price * item.quantity}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
 
                 <Separator />
 
@@ -207,7 +246,7 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
                   </div>
                 </div>
                 <Separator />
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-4 md:grid-cols-3">
                   <div className="space-y-2">
                     <div className="text-sm text-muted-foreground">
                       Type of Expense
@@ -220,68 +259,97 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
                     </div>
                     <div className="flex items-center">{po?.event_name}</div>
                   </div>
-                </div>
-                <Separator />
-                <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <div className="text-sm text-muted-foreground">
                       Ministry
                     </div>
                     <div className="flex items-center">{po?.ministry}</div>
                   </div>
+                </div>
+                <Separator />
+                <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <div className="text-sm text-muted-foreground">
                       Is PO Budgeted?
                     </div>
                     <div className="flex items-center">{po?.isBudgeted}</div>
                   </div>
+                  {po?.budget_num ? (
+                    <div className="space-y-2">
+                      <div className="text-sm text-muted-foreground">
+                        PO Number
+                      </div>
+                      <div className="flex items-center">{po.budget_num}</div>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <div className="text-sm text-muted-foreground">
+                        If not, who approved?
+                      </div>
+                      <div className="flex items-center">
+                        {po?.nonbudget_approval ?? "N/A"}
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <Separator />
                 <div className="grid gap-4 md:grid-cols-2">
                   <div className="space-y-2">
                     <div className="text-sm text-muted-foreground">
-                      Budget Number
+                      Total Amount
                     </div>
-                    <div className="flex items-center">{po?.budget_num}</div>
+                    <div className="flex items-center font-medium">
+                      <DollarSign className="mr-1 h-4 w-4" />
+                      {po?.amount.toFixed(2)}
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <div className="text-sm text-muted-foreground">
-                      If not, who approved?
+                      Additional Notes
                     </div>
-                    <div className="flex items-center">
-                      {po?.nonbudget_approval ?? "N/A"}
+                    <div className="rounded-lg bg-muted p-4 text-sm">
+                      {po?.message
+                        ? po.message
+                        : " No additional notes provided for this purchase order."}
                     </div>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <div className="text-sm text-muted-foreground">
-                    Additional Notes
-                  </div>
-                  <div className="rounded-lg bg-muted p-4 text-sm">
-                    {po?.message
-                      ? po.message
-                      : " No additional notes provided for this purchase order."}
                   </div>
                 </div>
 
                 <div className="flex justify-end space-x-2">
                   <Button
                     variant="outline"
-                    disabled={!po?.fileId}
+                    disabled={!po?.fileIds || po.fileIds.length === 0}
                     onClick={async () => {
-                      if (po?.fileId) {
-                        const url = await getFileUrl({ storageId: po.fileId });
-                        if (url) {
-                          window.open(url, "_blank");
+                      if (po?.fileIds && po.fileIds.length > 0) {
+                        const urls = [];
+                        for (const fileId of po.fileIds) {
+                          const url = await getFileUrl({ storageId: fileId });
+                          if (url) {
+                            urls.push(url);
+                          }
                         }
+                        const linksHtml = urls
+                          .map(
+                            (url, index) =>
+                              `<p><a href="${url}" target="_blank">PO Attachment ${index + 1}</a></p>`
+                          )
+                          .join("");
+                        const newTab = window.open();
+                        newTab?.document.write(`<div>${linksHtml}</div>`);
+                        newTab?.document.close();
                       }
                     }}
                   >
-                    Download Attachment
+                    Download Attachments ({po?.fileIds?.length ?? 0})
                   </Button>
+
                   {isAdmin && (
                     <>
+                      {po?.status !== "voided" && (
+                        <Button variant="outline" onClick={handleVoid}>
+                          Void
+                        </Button>
+                      )}
                       {po?.status !== "denied" && (
                         <Button variant="destructive" onClick={handleDeny}>
                           Deny

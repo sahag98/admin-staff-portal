@@ -53,7 +53,7 @@ const data = {
       // ],
     },
     {
-      title: "Your PO's",
+      title: "Your POs",
       url: "/pos",
     },
     {
@@ -194,7 +194,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <a href="#">
-                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                <div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <Image
                     src={"/icon.png"}
                     className="rounded"
@@ -204,7 +204,7 @@ export function AppSidebar() {
                   />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-semibold">New Life PO&apos;s</span>
+                  <span className="font-semibold">New Life Staff Portal</span>
                   <span className="">v1.0.0</span>
                 </div>
               </a>
@@ -250,7 +250,7 @@ export function AppSidebar() {
                           : "hover:bg-sidebar-accent transition-all"
                       )}
                     >
-                      All PO&apos;s
+                      All POs
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

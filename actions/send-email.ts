@@ -8,11 +8,11 @@ export async function sendEmail(
   values: z.infer<typeof formSchema>,
   po_id: Id<"pos">
 ) {
-  const resend = new Resend("re_gLWkB4j8_696ABZnRK56f1zEieEeZVUt2");
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
   const { data, error } = await resend.emails.send({
-    from: `Juan <onboarding@resend.dev>`,
-    to: ["sarona.a@findnewlife.church"],
+    from: `Staff Portal <onboarding@resend.dev>`,
+    to: ["sahagking@gmail.com"],
     cc: ["sahagking@gmail.com"],
     subject: "New Purchase Order",
     react: EmailTemplate(values, po_id),

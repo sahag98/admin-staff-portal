@@ -72,7 +72,7 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
       // }
 
       const po = await updateStatus({ po_id: orderId, status: "approved" });
-
+      console.log("po email: ", po?.email);
       if (po) {
         sendUpdate(po?.email, po.item_name, po.amount, "Approved");
       }
@@ -88,6 +88,19 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
 
       if (po) {
         sendUpdate(po.email, po.item_name, po.amount, "Denied");
+      }
+    } catch (error) {
+      console.error("Failed to deny PO:", error);
+      // You might want to add proper error handling/notification here
+    }
+  };
+
+  const handleVoid = async (orderId: Id<"pos">) => {
+    try {
+      const po = await updateStatus({ po_id: orderId, status: "voided" });
+
+      if (po) {
+        sendUpdate(po.email, po.item_name, po.amount, "Voided");
       }
     } catch (error) {
       console.error("Failed to deny PO:", error);
@@ -150,7 +163,17 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
                 <TableRow key={order._id}>
                   {/* <TableCell className="font-medium">{order._id}</TableCell> */}
                   <TableCell className="text-ellipsis">
-                    {order.item_name}
+                    <section className="flex items-center gap-2">
+                      {order.item_name.slice(0, 3).map((item, index) => (
+                        <section
+                          className="flex bg-secondary rounded-full px-2 py-1 items-center"
+                          key={index}
+                        >
+                          <p>{item.name}</p>
+                        </section>
+                      ))}
+                      {order.item_name.length > 3 && <p>And more...</p>}
+                    </section>
                   </TableCell>
                   <TableCell>${order.amount.toFixed(2)}</TableCell>
                   <TableCell>
@@ -170,10 +193,15 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
                         <X className="w-4 h-4 mr-1" />
                         Denied
                       </Badge>
-                    ) : (
+                    ) : order.status === "pending" ? (
                       <Badge className="shadow-none" variant="secondary">
                         <Clock className="w-4 h-4 mr-1" />
                         Pending
+                      </Badge>
+                    ) : (
+                      <Badge className="shadow-none" variant="outline">
+                        <Clock className="w-4 h-4 mr-1" />
+                        Voided
                       </Badge>
                     )}
                   </TableCell>
@@ -206,6 +234,12 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
                           className="text-red-500"
                         >
                           Deny
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleVoid(order._id)}
+                          className=""
+                        >
+                          Void
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

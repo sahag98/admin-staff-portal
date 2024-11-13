@@ -1,11 +1,15 @@
-import AllUsers from "@/components/all-users";
 import { AppSidebar } from "@/components/app-sidebar";
+import ExistingTemplates from "@/components/existing-templates";
+import { PoForm } from "@/components/po-form";
 import {
   Breadcrumb,
   BreadcrumbItem,
+  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
+  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
@@ -13,8 +17,11 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { UserButton } from "@clerk/nextjs";
+import { Plus, PlusCircle, PlusIcon } from "lucide-react";
 
-export default function Page() {
+export default function Page({ searchParams }: any) {
+  console.log("search: ", searchParams);
+
   return (
     <SidebarProvider
       style={
@@ -32,14 +39,21 @@ export default function Page() {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
-                  <BreadcrumbPage>All POs</BreadcrumbPage>
+                  {/* <BreadcrumbLink href="/create">Create PO</BreadcrumbLink>
+                  <BreadcrumbSeparator /> */}
+                  <BreadcrumbPage>New</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
           <UserButton />
         </header>
-        <AllUsers budget={false} />
+        <section className="flex justify-center mb-10 h-full">
+          <PoForm
+            draft_id={searchParams?.draft_id}
+            template_id={searchParams?.template_id}
+          />
+        </section>
       </SidebarInset>
     </SidebarProvider>
   );

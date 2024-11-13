@@ -70,6 +70,36 @@ async function userByExternalId(ctx: QueryCtx, externalId: string) {
     .unique();
 }
 
+export const getAllShareUsers = query({
+  args: {},
+  async handler(ctx) {
+    console.log("here");
+    // Get the authenticated user's identity
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthenticated call to query");
+    }
+
+    // Get the user from the database
+    const user = await ctx.db
+      .query("users")
+      .withIndex("byExternalId", (q) => q.eq("externalId", identity.subject))
+      .unique();
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // If user is admin, return all users
+    const allUsers = await ctx.db
+      .query("users")
+      .filter((q) => q.neq(q.field("externalId"), identity.subject))
+      .collect();
+
+    return allUsers;
+  },
+});
+
 export const getAllUsers = query({
   args: {},
   async handler(ctx) {

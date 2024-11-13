@@ -7,7 +7,7 @@ import { Resend } from "resend";
 import { z } from "zod";
 export async function sendUpdate(
   email: string,
-  item: string,
+  items: Array<Object>,
   amount: number,
   status: string
 ) {
@@ -15,9 +15,9 @@ export async function sendUpdate(
 
   const { data, error } = await resend.emails.send({
     from: "Juan <onboarding@resend.dev>",
-    to: ["arzsahag@gmail.com"],
+    to: [email],
     subject: "PO Status",
-    react: UpdateTemplate(email, item, amount, status),
+    react: UpdateTemplate(email, items, amount, status),
   });
 
   console.log("data: ", data);

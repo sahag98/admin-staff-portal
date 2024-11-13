@@ -28,10 +28,19 @@ import {
 import { useRouter } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export default function PurchaseOrdersTable() {
   const yourPOs = useQuery(api.pos.getUserPos);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const router = useRouter();
@@ -57,6 +66,17 @@ export default function PurchaseOrdersTable() {
     }
   };
 
+  // Calculate pagination
+  const totalPages = Math.ceil((sortedOrders?.length || 0) / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentItems = sortedOrders?.slice(startIndex, endIndex);
+
+  // Handle page change
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+
   if (yourPOs?.length === 0) {
     return (
       <div className="flex items-center gap-2 justify-center flex-col h-screen">
@@ -73,12 +93,6 @@ export default function PurchaseOrdersTable() {
           <Table>
             <TableHeader>
               <TableRow>
-                {/* <TableHead className="w-[100px]">
-                  <Button variant="ghost" onClick={() => handleSort("id")}>
-                    ID
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </TableHead> */}
                 <TableHead>
                   <Button variant="ghost" onClick={() => handleSort("item")}>
                     Item(s)
@@ -108,11 +122,21 @@ export default function PurchaseOrdersTable() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sortedOrders?.map((order) => (
+              {currentItems?.map((order) => (
                 <TableRow key={order._id}>
                   {/* <TableCell className="font-medium">{order._id}</TableCell> */}
                   <TableCell className="text-ellipsis">
-                    {order.item_name}
+                    <section className="flex items-center gap-2">
+                      {order.item_name.slice(0, 3).map((item, index) => (
+                        <section
+                          className="flex bg-secondary rounded-full px-2 py-1 items-center"
+                          key={index}
+                        >
+                          <p>{item.name}</p>
+                        </section>
+                      ))}
+                      {order.item_name.length > 3 && <p>And more...</p>}
+                    </section>
                   </TableCell>
                   <TableCell>${order.amount.toFixed(2)}</TableCell>
                   <TableCell>
@@ -131,6 +155,11 @@ export default function PurchaseOrdersTable() {
                       <Badge className="shadow-none" variant="destructive">
                         <X className="w-4 h-4 mr-1" />
                         Denied
+                      </Badge>
+                    ) : order.status === "voided" ? (
+                      <Badge className="shadow-none" variant="outline">
+                        <X className="w-4 h-4 mr-1" />
+                        Voided
                       </Badge>
                     ) : (
                       <Badge className="shadow-none" variant="secondary">
@@ -154,9 +183,6 @@ export default function PurchaseOrdersTable() {
                         >
                           View details
                         </DropdownMenuItem>
-                        {/* <DropdownMenuItem>Update order</DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>Delete order</DropdownMenuItem> */}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
@@ -166,6 +192,50 @@ export default function PurchaseOrdersTable() {
           </Table>
         </div>
       </div>
+
+      {/* Add pagination controls */}
+      {yourPOs && yourPOs?.length > 10 && (
+        <div className="mt-4 flex">
+          <Pagination className="self-end justify-end">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className={
+                    currentPage === 1
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      onClick={() => handlePageChange(page)}
+                      isActive={currentPage === page}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                )
+              )}
+
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className={
+                    currentPage === totalPages
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 }

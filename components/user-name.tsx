@@ -11,7 +11,7 @@ const UserName = ({ userId }: { userId: Id<"users"> }) => {
   if (!user) {
     return;
   }
-  return <BreadcrumbPage>{user?.name + " PO's"}</BreadcrumbPage>;
+  return <BreadcrumbPage>{user?.name + " POs"}</BreadcrumbPage>;
 };
 
 export default UserName;

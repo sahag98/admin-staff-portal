@@ -6,14 +6,16 @@ import {
   Head,
   Heading,
   Html,
+  Row,
   Preview,
   Text,
   Tailwind,
+  Section,
 } from "@react-email/components";
 
 export const UpdateTemplate = (
   email: string,
-  item: string,
+  items: Array<any>,
   amount: number,
   status: string
 ) => {
@@ -44,8 +46,13 @@ export const UpdateTemplate = (
             </Heading>
 
             <Text className="text-black text-[15px] leading-[24px]">
-              Item(s): {item}
+              Item(s):
             </Text>
+            <Section>
+              {items.map((item, idx) => (
+                <Text key={idx}>{item?.name}</Text>
+              ))}
+            </Section>
             <Text className="text-black text-[15px] leading-[24px]">
               Amount: ${amount.toFixed(2)}
             </Text>

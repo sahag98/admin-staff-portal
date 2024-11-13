@@ -3,7 +3,9 @@ import { AppSidebar } from "@/components/app-sidebar";
 import {
   Breadcrumb,
   BreadcrumbItem,
+  BreadcrumbLink,
   BreadcrumbList,
+  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -33,6 +35,8 @@ export default function Page({ params }: { params: { user: Id<"users"> } }) {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
+                <BreadcrumbLink href="/all-pos">All POs</BreadcrumbLink>
+                <BreadcrumbSeparator />
                 <UserName userId={user} />
               </BreadcrumbItem>
             </BreadcrumbList>
