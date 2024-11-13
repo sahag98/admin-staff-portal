@@ -12,9 +12,14 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { Id } from "@/convex/_generated/dataModel";
 import { UserButton } from "@clerk/nextjs";
 
-export default function Page({ searchParams }: any) {
+export default function Page({
+  searchParams,
+}: {
+  searchParams: { draft_id: Id<"po_drafts">; template_id: Id<"pos"> };
+}) {
   return (
     <SidebarProvider
       style={
