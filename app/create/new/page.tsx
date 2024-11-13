@@ -1,15 +1,11 @@
 import { AppSidebar } from "@/components/app-sidebar";
-import ExistingTemplates from "@/components/existing-templates";
 import { PoForm } from "@/components/po-form";
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
@@ -17,11 +13,8 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { UserButton } from "@clerk/nextjs";
-import { Plus, PlusCircle, PlusIcon } from "lucide-react";
 
 export default function Page({ searchParams }: any) {
-  console.log("search: ", searchParams);
-
   return (
     <SidebarProvider
       style={

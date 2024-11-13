@@ -1,3 +1,4 @@
+//@ts-ignore
 import * as React from "react";
 
 import {
@@ -14,6 +15,7 @@ import {
 
 export const UpdateTemplate = (
   email: string,
+
   items: Array<any>,
   amount: number,
   status: string
