@@ -10,7 +10,6 @@ import { api } from "@/convex/_generated/api";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import ApprovalBanner from "./approval-banner";
-import SkeletonLoader from "./skeleton-loader";
 
 export default function AllUsers({ budget }: { budget: boolean }) {
   const [searchTerm, setSearchTerm] = useState("");

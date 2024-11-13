@@ -6,7 +6,6 @@ import { useState, useEffect } from "react";
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
@@ -158,7 +157,7 @@ export function PoForm({
   const userInfo = useQuery(api.users.current);
   const templateInfo = useQuery(api.pos.getTemplatePO, { poId: template_id });
   const draftInfo = useQuery(api.pos.getPODraft, { poDraft_id: draft_id });
-  const allUsers = useQuery(api.users.getAllShareUsers);
+  // const allUsers = useQuery(api.users.getAllShareUsers);
   const createPODraft = useMutation(api.pos.createPODraft);
   const updateDraft = useMutation(api.pos.updateDraft);
   const deleteDraft = useMutation(api.pos.deleteDraft);
@@ -270,7 +269,7 @@ export function PoForm({
   const [isEventOpen, setIsEventOpen] = useState(false);
   const [isMinistryOpen, setIsMinistryOpen] = useState(false);
   const [isBudgetNumOpen, setIsBudgetNumOpen] = useState(false);
-  const [isSharing, setIsSharing] = useState(false);
+  // const [isSharing, setIsSharing] = useState(false);
   const [isFormSubmitting, setIsFormSubmitting] = useState(false);
 
   const [files, setFiles] = useState<File[]>([]);
@@ -310,8 +309,8 @@ export function PoForm({
   });
 
   async function handleFileUpload() {
-    let fileIds: string[] = [];
-    let fileNames: string[] = [];
+    const fileIds: string[] = [];
+    const fileNames: string[] = [];
     if (files.length > 0) {
       // Upload each file and collect their IDs
       for (const file of files) {
@@ -373,7 +372,7 @@ export function PoForm({
         description: "You can continue it later on.",
       });
     } else {
-      const poId = await createPODraft({
+      await createPODraft({
         email: form.getValues().email,
         amount: form.getValues().amount,
         template: form.getValues().template,
@@ -448,7 +447,7 @@ export function PoForm({
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
   const calculateTotal = (items: Item[]) => {
-    let total = items.reduce(
+    const total = items.reduce(
       (sum, item) => sum + item.quantity * item.price,
       0
     );

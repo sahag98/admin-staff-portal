@@ -6,7 +6,6 @@ import {
   Head,
   Heading,
   Html,
-  Row,
   Preview,
   Text,
   Tailwind,
