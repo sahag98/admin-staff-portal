@@ -7,7 +7,6 @@ import { Card, CardContent, CardFooter, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import SkeletonLoader from "./skeleton-loader";
-import { Badge } from "./ui/badge";
 
 const ExistingDrafts = () => {
   const drafts = useQuery(api.pos.getUserPODrafts);

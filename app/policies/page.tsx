@@ -12,11 +12,8 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { UserButton } from "@clerk/nextjs";
-import { currentUser } from "@clerk/nextjs/server";
-import { Construction } from "lucide-react";
 
 export default async function Page() {
-  const user = await currentUser();
   return (
     <SidebarProvider
       style={
