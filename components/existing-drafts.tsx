@@ -7,6 +7,7 @@ import { Card, CardContent, CardFooter, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import SkeletonLoader from "./skeleton-loader";
+import { Badge } from "./ui/badge";
 
 const ExistingDrafts = () => {
   const drafts = useQuery(api.pos.getUserPODrafts);
@@ -22,7 +23,15 @@ const ExistingDrafts = () => {
   }
   return (
     <div className="flex-1 flex flex-col gap-3">
-      <h2 className="text-xl font-semibold">Drafts ({drafts?.length})</h2>
+      <section className="flex items-center gap-1 ">
+        <NotepadTextDashed size={28} />
+        <h2 className="text-xl font-semibold gap-2 flex items-center">
+          Drafts
+          <span className="bg-secondary text-secondary-foreground text-sm flex items-center justify-center rounded-full size-7">
+            {drafts.length}
+          </span>
+        </h2>
+      </section>
       {drafts?.length === 0 ? (
         <div className="bg-secondary p-10 rounded flex-1 h-full flex flex-col gap-2 justify-center items-center">
           <NotepadTextDashed size={60} />

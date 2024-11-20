@@ -65,6 +65,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { Checkbox } from "./ui/checkbox";
 import { Id } from "@/convex/_generated/dataModel";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export const formSchema = z
   .object({
@@ -79,6 +80,12 @@ export const formSchema = z
     priority: z.enum(["High", "Medium", "Low"]),
     vendor: z.string({ required_error: "A vendor is required" }).min(2).max(50),
     expense_type: z.enum(["General", "Building", "Missions"]),
+    payment_term: z.enum([
+      "Check in Advance",
+      "Check on Delivery",
+      "Ministry Credit Card",
+      "Reimbursement",
+    ]),
     event_name: z.enum([
       "Gala",
       "Easter",
@@ -172,6 +179,19 @@ export function PoForm({
     ExpenseType.General,
     ExpenseType.Building,
     ExpenseType.Missions,
+  ];
+  enum TermType {
+    CheckInAdvance = "Check in Advance",
+    CheckOnDelivery = "Check on Delivery",
+    MinistryCreditCard = "Ministry Credit Card",
+    Reimbursement = "Reimbursement",
+  }
+
+  const termTypes: TermType[] = [
+    TermType.CheckInAdvance,
+    TermType.CheckOnDelivery,
+    TermType.MinistryCreditCard,
+    TermType.Reimbursement,
   ];
 
   enum EventType {
@@ -267,6 +287,7 @@ export function PoForm({
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isExpenseOpen, setIsExpenseOpen] = useState(false);
   const [isEventOpen, setIsEventOpen] = useState(false);
+  const [isTermOpen, setIsTermOpen] = useState(false);
   const [isMinistryOpen, setIsMinistryOpen] = useState(false);
   const [isBudgetNumOpen, setIsBudgetNumOpen] = useState(false);
   // const [isSharing, setIsSharing] = useState(false);
@@ -289,6 +310,9 @@ export function PoForm({
       priority: draftInfo?.priority
         ? draftInfo.priority
         : templateInfo?.priority ?? "Medium",
+      payment_term: draftInfo?.payment_term
+        ? draftInfo.payment_term
+        : templateInfo?.payment_term,
       expense_type: draftInfo?.expense_type
         ? draftInfo.expense_type
         : templateInfo?.expense_type,
@@ -353,6 +377,7 @@ export function PoForm({
         template_name: form.getValues().template_name,
         budget_num: form.getValues().budget_num,
         event_name: form.getValues().event_name,
+        payment_term: form.getValues().payment_term,
         expense_type: form.getValues().expense_type,
         isBudgeted: form.getValues().isBudgeted,
         item_name: form.getValues().items,
@@ -379,6 +404,7 @@ export function PoForm({
         template_name: form.getValues().template_name,
         budget_num: form.getValues().budget_num,
         event_name: form.getValues().event_name,
+        payment_term: form.getValues().payment_term,
         expense_type: form.getValues().expense_type,
         isBudgeted: form.getValues().isBudgeted,
         item_name: form.getValues().items,
@@ -409,6 +435,10 @@ export function PoForm({
       if (draftInfo.priority) {
         form.setValue("priority", draftInfo?.priority);
       }
+
+      if (templateInfo?.priority) {
+        form.setValue("priority", templateInfo.priority);
+      }
       form.reset({
         vendor: draftInfo.vendor,
         email: draftInfo.email,
@@ -417,6 +447,7 @@ export function PoForm({
           ? new Date(draftInfo.required_by)
           : new Date(),
         priority: draftInfo.priority,
+        payment_term: draftInfo.payment_term,
         expense_type: draftInfo.expense_type,
         event_name: draftInfo.event_name,
         ministry: draftInfo.ministry,
@@ -432,6 +463,7 @@ export function PoForm({
         email: currUser.user?.emailAddresses[0].emailAddress,
         items: templateInfo.item_name,
         priority: templateInfo.priority,
+        payment_term: templateInfo.payment_term,
         expense_type: templateInfo.expense_type,
         event_name: templateInfo.event_name,
         ministry: templateInfo.ministry,
@@ -511,6 +543,7 @@ export function PoForm({
       template_name: values.template_name,
       budget_num: values.budget_num,
       event_name: values.event_name,
+      payment_term: values.payment_term,
       expense_type: values.expense_type,
       isBudgeted: values.isBudgeted,
       item_name: values.items,
@@ -653,6 +686,68 @@ export function PoForm({
                       </FormItem>
                     </RadioGroup>
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="payment_term"
+              render={({ field }) => (
+                <FormItem className="flex w-full flex-1 flex-col">
+                  <FormLabel>
+                    Payment Terms
+                    <span className="text-lg text-red-400">*</span>
+                  </FormLabel>
+                  <Popover open={isTermOpen} onOpenChange={setIsTermOpen}>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            "flex-1 justify-between",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value
+                            ? termTypes.find((term) => term === field.value)
+                            : "Select Term"}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[400px] p-0">
+                      <Command>
+                        {/* <CommandInput placeholder="Search language..." /> */}
+                        <CommandList>
+                          <CommandGroup>
+                            {termTypes.map((term) => (
+                              <CommandItem
+                                value={term}
+                                key={term}
+                                onSelect={() => {
+                                  form.setValue("payment_term", term);
+                                  setIsTermOpen(false);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    term === field.value
+                                      ? "opacity-100"
+                                      : "opacity-0"
+                                  )}
+                                />
+                                {term}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+
                   <FormMessage />
                 </FormItem>
               )}
@@ -1389,6 +1484,15 @@ export function PoForm({
             </>
           )}
           <section className="flex items-center pt-5 gap-2">
+            <Link className="mr-auto" href={"/create"}>
+              <Button
+                variant={"secondary"}
+                disabled={isFormSubmitting}
+                type="button"
+              >
+                Cancel
+              </Button>
+            </Link>
             <Button disabled={isFormSubmitting} type="submit">
               {isFormSubmitting ? (
                 <section className="flex items-center gap-2">

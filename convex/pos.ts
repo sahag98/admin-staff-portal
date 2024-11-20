@@ -3,6 +3,7 @@ import { mutation, query } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
 import { Resend } from "resend";
 import { internal } from "./_generated/api";
+import { GetUser } from "@/lib/checkAuth";
 
 export const createPO = mutation({
   args: {
@@ -12,6 +13,12 @@ export const createPO = mutation({
     required_by: v.string(),
     priority: v.union(v.literal("High"), v.literal("Medium"), v.literal("Low")),
     vendor: v.string(),
+    payment_term: v.union(
+      v.literal("Check in Advance"),
+      v.literal("Check on Delivery"),
+      v.literal("Ministry Credit Card"),
+      v.literal("Reimbursement")
+    ),
     expense_type: v.union(
       v.literal("General"),
       v.literal("Building"),
@@ -78,17 +85,7 @@ export const createPO = mutation({
     fileNames: v.optional(v.array(v.string())),
   },
   async handler(ctx, args) {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Unauthenticated call to mutation");
-    }
-    const user = await ctx.db
-      .query("users")
-      .withIndex("byExternalId", (q) => q.eq("externalId", identity.subject))
-      .unique();
-    if (!user) {
-      throw new Error("Unauthenticated call to mutation");
-    }
+    const user = await GetUser(ctx);
 
     if (user === null) {
       throw new Error("You are not authorized.");
@@ -100,6 +97,7 @@ export const createPO = mutation({
         template,
         email,
         event_name,
+        payment_term,
         expense_type,
         isBudgeted,
         item_name,
@@ -122,6 +120,7 @@ export const createPO = mutation({
         template_name,
         email,
         event_name,
+        payment_term,
         expense_type,
         isBudgeted,
         item_name,
@@ -176,6 +175,14 @@ export const createPODraft = mutation({
         v.literal("Not Related to Any Events")
       )
     ),
+    payment_term: v.optional(
+      v.union(
+        v.literal("Check in Advance"),
+        v.literal("Check on Delivery"),
+        v.literal("Ministry Credit Card"),
+        v.literal("Reimbursement")
+      )
+    ),
     expense_type: v.optional(
       v.union(
         v.literal("General"),
@@ -226,17 +233,7 @@ export const createPODraft = mutation({
     fileNames: v.optional(v.array(v.string())),
   },
   async handler(ctx, args) {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Unauthenticated call to mutation");
-    }
-    const user = await ctx.db
-      .query("users")
-      .withIndex("byExternalId", (q) => q.eq("externalId", identity.subject))
-      .unique();
-    if (!user) {
-      throw new Error("Unauthenticated call to mutation");
-    }
+    const user = await GetUser(ctx);
 
     if (user === null) {
       throw new Error("You are not authorized.");
@@ -248,6 +245,7 @@ export const createPODraft = mutation({
         template,
         email,
         event_name,
+        payment_term,
         expense_type,
         isBudgeted,
         item_name,
@@ -270,6 +268,7 @@ export const createPODraft = mutation({
         template_name,
         email,
         event_name,
+        payment_term,
         expense_type,
         isBudgeted,
         item_name,
@@ -293,18 +292,10 @@ export const createPODraft = mutation({
 export const getUserPos = query({
   args: {},
   async handler(ctx, args) {
-    const identity = await ctx.auth.getUserIdentity();
+    const user = await GetUser(ctx);
 
-    console.log("identity: ", identity);
-    if (!identity) {
-      throw new Error("Unauthenticated call to mutation");
-    }
-    const user = await ctx.db
-      .query("users")
-      .withIndex("byExternalId", (q) => q.eq("externalId", identity.subject))
-      .unique();
     if (!user) {
-      throw new Error("Unauthenticated call to mutation");
+      return;
     }
 
     const userPos = await ctx.db
@@ -320,20 +311,10 @@ export const getUserPos = query({
 export const getUserPODrafts = query({
   args: {},
   async handler(ctx, args) {
-    const identity = await ctx.auth.getUserIdentity();
-
-    console.log("identity: ", identity);
-    if (!identity) {
-      throw new Error("Unauthenticated call to mutation");
-    }
-    const user = await ctx.db
-      .query("users")
-      .withIndex("byExternalId", (q) => q.eq("externalId", identity.subject))
-      .unique();
+    const user = await GetUser(ctx);
     if (!user) {
-      throw new Error("Unauthenticated call to mutation");
+      return;
     }
-
     const userPoDrafts = await ctx.db
       .query("po_drafts")
       .filter((q) => q.eq(q.field("user"), user._id))
@@ -347,20 +328,10 @@ export const getUserPODrafts = query({
 export const getUserTemplatePos = query({
   args: {},
   async handler(ctx, args) {
-    const identity = await ctx.auth.getUserIdentity();
-
-    console.log("identity: ", identity);
-    if (!identity) {
-      throw new Error("Unauthenticated call to mutation");
-    }
-    const user = await ctx.db
-      .query("users")
-      .withIndex("byExternalId", (q) => q.eq("externalId", identity.subject))
-      .unique();
+    const user = await GetUser(ctx);
     if (!user) {
-      throw new Error("Unauthenticated call to mutation");
+      return;
     }
-
     const userTemplatePos = await ctx.db
       .query("pos")
       .filter((q) =>
@@ -379,18 +350,7 @@ export const getTemplatePO = query({
     if (!args.poId) {
       return;
     }
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Unauthenticated call to query");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .withIndex("byExternalId", (q) => q.eq("externalId", identity.subject))
-      .unique();
-    if (!user) {
-      throw new Error("Unauthenticated call to query");
-    }
+    await GetUser(ctx);
 
     const po = await ctx.db.get(args.poId);
     if (!po) {
@@ -407,18 +367,7 @@ export const getPODraft = query({
     if (!args.poDraft_id) {
       return;
     }
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Unauthenticated call to query");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .withIndex("byExternalId", (q) => q.eq("externalId", identity.subject))
-      .unique();
-    if (!user) {
-      throw new Error("Unauthenticated call to query");
-    }
+    await GetUser(ctx);
 
     const poDraft = await ctx.db.get(args.poDraft_id);
     if (!poDraft) {
@@ -438,18 +387,7 @@ export const getPODraft = query({
 export const getPo = query({
   args: { poId: v.id("pos") },
   async handler(ctx, args) {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Unauthenticated call to query");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .withIndex("byExternalId", (q) => q.eq("externalId", identity.subject))
-      .unique();
-    if (!user) {
-      throw new Error("Unauthenticated call to query");
-    }
+    await GetUser(ctx);
 
     const po = await ctx.db.get(args.poId);
     if (!po) {
@@ -468,18 +406,7 @@ export const getPo = query({
 export const getUserPosById = query({
   args: { user: v.id("users") },
   async handler(ctx, args) {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Unauthenticated call to query");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .withIndex("byExternalId", (q) => q.eq("externalId", identity.subject))
-      .unique();
-    if (!user) {
-      throw new Error("Unauthenticated call to query");
-    }
+    const user = await GetUser(ctx);
 
     // Only allow admins to view other users' POs
     if (user.role !== "admin" && args.user !== user._id) {
@@ -500,20 +427,7 @@ export const deleteDraft = mutation({
     draft_id: v.id("po_drafts"),
   },
   async handler(ctx, args) {
-    const identity = await ctx.auth.getUserIdentity();
-
-    if (!identity) {
-      throw new Error("Unauthenticated call to mutation");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .withIndex("byExternalId", (q) => q.eq("externalId", identity.subject))
-      .unique();
-
-    if (!user) {
-      throw new Error("Unauthenticated call to mutation");
-    }
+    await GetUser(ctx);
 
     await ctx.db.delete(args.draft_id);
   },
@@ -524,20 +438,7 @@ export const deleteTemplate = mutation({
     template_id: v.id("pos"),
   },
   async handler(ctx, args) {
-    const identity = await ctx.auth.getUserIdentity();
-
-    if (!identity) {
-      throw new Error("Unauthenticated call to mutation");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .withIndex("byExternalId", (q) => q.eq("externalId", identity.subject))
-      .unique();
-
-    if (!user) {
-      throw new Error("Unauthenticated call to mutation");
-    }
+    await GetUser(ctx);
 
     await ctx.db.patch(args.template_id, { template: false });
   },
@@ -577,6 +478,12 @@ export const updateDraft = mutation({
         v.literal("New Life Christmas Experience"),
         v.literal("Not Related to Any Events")
       )
+    ),
+    payment_term: v.union(
+      v.literal("Check in Advance"),
+      v.literal("Check on Delivery"),
+      v.literal("Ministry Credit Card"),
+      v.literal("Reimbursement")
     ),
     expense_type: v.optional(
       v.union(
@@ -627,26 +534,14 @@ export const updateDraft = mutation({
     fileNames: v.optional(v.array(v.string())),
   },
   async handler(ctx, args) {
-    const identity = await ctx.auth.getUserIdentity();
-
-    if (!identity) {
-      throw new Error("Unauthenticated call to mutation");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .withIndex("byExternalId", (q) => q.eq("externalId", identity.subject))
-      .unique();
-
-    if (!user) {
-      throw new Error("Unauthenticated call to mutation");
-    }
+    await GetUser(ctx);
 
     const {
       amount,
       budget_num,
       email,
       event_name,
+      payment_term,
       expense_type,
       fileIds,
       fileNames,
@@ -668,6 +563,7 @@ export const updateDraft = mutation({
       budget_num,
       email,
       event_name,
+      payment_term,
       expense_type,
       fileIds,
       fileNames,
@@ -698,20 +594,7 @@ export const updatePOStatus = mutation({
     status: v.string(),
   },
   async handler(ctx, args) {
-    const identity = await ctx.auth.getUserIdentity();
-
-    if (!identity) {
-      throw new Error("Unauthenticated call to mutation");
-    }
-
-    const user = await ctx.db
-      .query("users")
-      .withIndex("byExternalId", (q) => q.eq("externalId", identity.subject))
-      .unique();
-
-    if (!user) {
-      throw new Error("Unauthenticated call to mutation");
-    }
+    const user = await GetUser(ctx);
 
     // Check if user is admin
     if (user.role !== "admin") {
@@ -731,10 +614,7 @@ export const updatePOStatus = mutation({
 export const cancelPO = mutation({
   args: { poId: v.id("pos") },
   handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error("Not authenticated");
-    }
+    const user = await GetUser(ctx);
 
     const po = await ctx.db.get(args.poId);
     if (!po) {
@@ -742,14 +622,6 @@ export const cancelPO = mutation({
     }
 
     // Check if user is the owner or an admin
-    const user = await ctx.db
-      .query("users")
-      .withIndex("byExternalId", (q) => q.eq("externalId", identity.subject))
-      .unique();
-
-    if (!user) {
-      throw new Error("User not found");
-    }
 
     // Only allow cancellation if user owns the PO or is an admin
     const isOwner = po.user === user._id;

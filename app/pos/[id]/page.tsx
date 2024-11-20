@@ -203,7 +203,7 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
 
                 <Separator />
 
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-4 md:grid-cols-3">
                   <div className="space-y-2">
                     <div className="text-sm text-muted-foreground">
                       Created At
@@ -214,6 +214,12 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
                         ? new Date(po._creationTime).toLocaleDateString()
                         : "N/A"}
                     </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="text-sm text-muted-foreground">
+                      Payment Term
+                    </div>
+                    <div className="flex items-center">{po?.payment_term}</div>
                   </div>
                   <div className="space-y-2">
                     <div className="text-sm text-muted-foreground">

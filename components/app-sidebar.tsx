@@ -1,16 +1,27 @@
 "use client";
 import * as React from "react";
-import { LogOut } from "lucide-react";
+import {
+  Calculator,
+  ChartColumnBig,
+  ChevronRight,
+  ClipboardList,
+  Info,
+  LogOut,
+  Shield,
+} from "lucide-react";
 
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
 } from "@/components/ui/sidebar";
 import { SignOutButton } from "@clerk/nextjs";
 import { Button } from "./ui/button";
@@ -20,6 +31,11 @@ import { cn } from "@/lib/utils";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Image from "next/image";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "./ui/collapsible";
 
 // This is sample data.
 const data = {
@@ -27,40 +43,58 @@ const data = {
     {
       title: "Dashboard",
       url: "/",
-      // items: [
-      //   {
-      //     title: "Installation",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Project Structure",
-      //     url: "#",
-      //   },
-      // ],
+      icon: <ChartColumnBig size={20} />,
     },
     {
-      title: "Create PO",
-      url: "/create",
-      // items: [
-      //   {
-      //     title: "Installation",
-      //     url: "#",
-      //   },
-      //   {
-      //     title: "Project Structure",
-      //     url: "#",
-      //   },
-      // ],
-    },
-    {
-      title: "Your POs",
+      title: "PO",
       url: "/pos",
+      icon: <ClipboardList size={20} />,
+      items: [
+        {
+          title: "Create PO",
+          url: "/create",
+        },
+        {
+          title: "Your POs",
+          url: "/pos",
+        },
+      ],
+    },
+    // {
+    //   title: "Your POs",
+    //   url: "/pos",
+    // },
+    {
+      title: "Budget",
+      url: "/budget",
+      icon: <Calculator size={20} />,
+      items: [
+        {
+          title: "Your Budget",
+          url: "/budget",
+        },
+      ],
     },
     {
-      title: "Your Budget",
-      url: "/budget",
+      title: "Policies and Procedures",
+      url: "/policies-and-procedures",
+      icon: <Shield size={20} />,
+      items: [
+        {
+          title: "Policies",
+          url: "/policies",
+        },
+        {
+          title: "Procedures",
+          url: "/procedures",
+        },
+      ],
     },
-
+    {
+      title: "Information",
+      url: "/information",
+      icon: <Info size={20} />,
+    },
     // items: [
     //   {
     //     title: "Routing",
@@ -216,26 +250,89 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarMenu className="gap-2">
             {data.navMain.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild>
-                  <Link
-                    href={
-                      item.url === "/budget"
-                        ? `${item.url}/${userInfo?._id}`
-                        : item.url
-                    }
-                    className={cn(
-                      "font-medium",
-                      (pathname === item.url && pathname !== "/budget") ||
-                        pathname === `${item.url}/${userInfo?._id}`
-                        ? "bg-primary text-primary-foreground"
-                        : "hover:bg-sidebar-accent transition-all"
-                    )}
+              <>
+                {item.title === "Dashboard" ? (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <Link
+                        href={item.url}
+                        className={cn(
+                          "font-medium",
+                          pathname === "/"
+                            ? "bg-sidebar-accent transition-all text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                            : "hover:bg-sidebar-accent transition-all"
+                        )}
+                      >
+                        {item.icon}
+                        {item.title}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ) : item.title === "Information" ? (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <Link
+                        href={item.url}
+                        className={cn(
+                          "font-medium",
+                          pathname === "/information"
+                            ? "bg-sidebar-accent transition-all text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                            : "hover:bg-sidebar-accent transition-all"
+                        )}
+                      >
+                        {item.icon}
+                        {item.title}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ) : (
+                  <Collapsible
+                    key={item.title}
+                    title={item.title}
+                    defaultOpen
+                    className="group/collapsible"
                   >
-                    {item.title}
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+                    <SidebarGroup>
+                      <SidebarGroupLabel
+                        asChild
+                        className="group/label text-sm text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                      >
+                        <CollapsibleTrigger className=" p-5">
+                          <span className="mr-2">{item.icon}</span>
+                          <span>{item.title}</span>
+                          <ChevronRight className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-90" />
+                        </CollapsibleTrigger>
+                      </SidebarGroupLabel>
+                      <CollapsibleContent>
+                        {/* <SidebarGroupContent> */}
+                        <SidebarMenuSub>
+                          {item.items?.length !== 0 &&
+                            item.items?.map((item) => (
+                              <SidebarMenuItem key={item.title}>
+                                <SidebarMenuButton
+                                  className="p-3 hover:bg-sidebar-accent/50 transition-all"
+                                  asChild
+                                  isActive={pathname === item.url}
+                                >
+                                  <Link
+                                    href={
+                                      item.url === "/budget"
+                                        ? `${item.url}/${userInfo?._id}`
+                                        : item.url
+                                    }
+                                  >
+                                    {item.title}
+                                  </Link>
+                                </SidebarMenuButton>
+                              </SidebarMenuItem>
+                            ))}
+                        </SidebarMenuSub>
+                        {/* </SidebarGroupContent> */}
+                      </CollapsibleContent>
+                    </SidebarGroup>
+                  </Collapsible>
+                )}
+              </>
             ))}
             {userInfo?.role === "admin" && (
               <>
@@ -246,7 +343,7 @@ export function AppSidebar() {
                       className={cn(
                         "font-medium",
                         pathname === "/all-pos"
-                          ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
                           : "hover:bg-sidebar-accent transition-all"
                       )}
                     >
@@ -260,8 +357,9 @@ export function AppSidebar() {
                       href={"/budget"}
                       className={cn(
                         "font-medium",
-                        pathname === "/budget" &&
-                          "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+                        pathname === "/budget"
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
+                          : "hover:bg-sidebar-accent transition-all"
                       )}
                     >
                       All Budgets

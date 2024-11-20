@@ -35,6 +35,14 @@ export default defineSchema({
         v.literal("Not Related to Any Events")
       )
     ),
+    payment_term: v.optional(
+      v.union(
+        v.literal("Check in Advance"),
+        v.literal("Check on Delivery"),
+        v.literal("Ministry Credit Card"),
+        v.literal("Reimbursement")
+      )
+    ),
     expense_type: v.optional(
       v.union(
         v.literal("General"),
@@ -114,6 +122,12 @@ export default defineSchema({
       v.literal("Walkthrough Bethlehem"),
       v.literal("New Life Christmas Experience"),
       v.literal("Not Related to Any Events")
+    ),
+    payment_term: v.union(
+      v.literal("Check in Advance"),
+      v.literal("Check on Delivery"),
+      v.literal("Ministry Credit Card"),
+      v.literal("Reimbursement")
     ),
     expense_type: v.union(
       v.literal("General"),

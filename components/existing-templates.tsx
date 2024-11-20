@@ -15,6 +15,7 @@ const ExistingTemplates = () => {
   if (!templates) {
     return (
       <div className="flex-1 flex flex-col gap-3">
+        <LayoutTemplate size={60} />
         <h2 className="text-xl font-semibold">Templates (...)</h2>
         <SkeletonLoader />
       </div>
@@ -22,12 +23,20 @@ const ExistingTemplates = () => {
   }
   return (
     <div className="flex-1 flex flex-col gap-3">
-      <h2 className="text-xl font-semibold">Templates ({templates?.length})</h2>
+      <section className="flex items-center gap-1">
+        <LayoutTemplate size={28} />
+        <h2 className="text-xl flex font-semibold gap-2">
+          Templates{" "}
+          <span className="bg-secondary text-secondary-foreground text-sm flex items-center justify-center rounded-full size-7">
+            {templates?.length}
+          </span>
+        </h2>
+      </section>
       {templates?.length === 0 ? (
         <div className="bg-secondary rounded flex-1 h-full flex flex-col gap-2 justify-center items-center">
           <LayoutTemplate size={60} />
           <h3 className="text-lg font-semibold">No templates yet</h3>
-          <p>
+          <p className="text-sm">
             To create a template, enable the make template checkbox from within
             the create po page.
           </p>

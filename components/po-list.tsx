@@ -86,6 +86,10 @@ export default function PurchaseOrdersTable() {
     );
   }
 
+  if (!yourPOs) {
+    return;
+  }
+
   return (
     <div className="w-full">
       <div className="overflow-x-auto">

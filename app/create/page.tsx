@@ -52,7 +52,7 @@ export default async function Page() {
         </header>
         <section className="p-4 flex flex-col gap-5 mb-10 h-full">
           <Link
-            className="w-1/4 items-center rounded-lg justify-center border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-1/4 flex flex-col gap-5"
+            className="md:w-1/4 w-full items-center rounded-lg justify-center border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground h-1/4 flex flex-col gap-5"
             href={"/create/new"}
           >
             <button className="flex flex-col items-center justify-center gap-5">
