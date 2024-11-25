@@ -1,4 +1,3 @@
-"use client";
 import { AppSidebar } from "@/components/app-sidebar";
 import ExistingDrafts from "@/components/existing-drafts";
 import ExistingTemplates from "@/components/existing-templates";
@@ -15,14 +14,16 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { api } from "@/convex/_generated/api";
 import { UserButton } from "@clerk/nextjs";
-import { auth } from "@clerk/nextjs/server";
-import { Authenticated, useConvexAuth } from "convex/react";
+import { Authenticated } from "convex/react";
+import { preloadQuery } from "convex/nextjs";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 
-export default function Page() {
+export default async function Page() {
+  const preloadedDrafts = await preloadQuery(api.pos.getUserPODrafts);
   return (
     <SidebarProvider
       style={
@@ -58,18 +59,14 @@ export default function Page() {
             </button>
           </Link>
           <section className="flex flex-col gap-5">
-            <Suspense fallback={<SkeletonLoader />}>
-              <Authenticated>
-                <ExistingDrafts />
-              </Authenticated>
-            </Suspense>
+            {/* <Suspense fallback={<SkeletonLoader />}> */}
+            <ExistingDrafts preloadedDrafts={preloadedDrafts} />
+            {/* </Suspense> */}
           </section>
 
-          <Suspense fallback={<SkeletonLoader />}>
-            <Authenticated>
-              <ExistingTemplates />
-            </Authenticated>
-          </Suspense>
+          {/* <Suspense fallback={<SkeletonLoader />}>
+            <ExistingTemplates />
+          </Suspense> */}
           {/*  */}
           {/* <PoForm /> */}
         </section>

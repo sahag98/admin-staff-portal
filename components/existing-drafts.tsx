@@ -1,6 +1,11 @@
 "use client";
 import { api } from "@/convex/_generated/api";
-import { useMutation, useQuery } from "convex/react";
+import {
+  Preloaded,
+  useMutation,
+  usePreloadedQuery,
+  useQuery,
+} from "convex/react";
 import { NotepadTextDashed, Trash2 } from "lucide-react";
 import React from "react";
 import { Card, CardContent, CardFooter, CardTitle } from "./ui/card";
@@ -8,10 +13,14 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import SkeletonLoader from "./skeleton-loader";
 
-const ExistingDrafts = () => {
+const ExistingDrafts = ({
+  preloadedDrafts,
+}: {
+  preloadedDrafts: Preloaded<typeof api.pos.getUserPODrafts>;
+}) => {
   const currentUser = useQuery(api.users.current);
   console.log("curr user: ", currentUser?._id);
-  const drafts = useQuery(api.pos.getUserPODrafts);
+  const drafts = usePreloadedQuery(preloadedDrafts);
   const deleteDraft = useMutation(api.pos.deleteDraft);
 
   if (!drafts) {
