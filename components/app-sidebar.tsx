@@ -249,7 +249,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarMenu className="gap-2">
             {data.navMain.map((item) => (
-              <>
+              <React.Fragment key={item.title}>
                 {item.title === "Dashboard" ? (
                   <SidebarMenuItem>
                     <SidebarMenuButton asChild>
@@ -331,7 +331,7 @@ export function AppSidebar() {
                     </SidebarGroup>
                   </Collapsible>
                 )}
-              </>
+              </React.Fragment>
             ))}
             {userInfo?.role === "admin" && (
               <>

@@ -9,6 +9,8 @@ import Link from "next/link";
 import SkeletonLoader from "./skeleton-loader";
 
 const ExistingDrafts = () => {
+  const currentUser = useQuery(api.users.current);
+  console.log("curr user: ", currentUser?._id);
   const drafts = useQuery(api.pos.getUserPODrafts);
   const deleteDraft = useMutation(api.pos.deleteDraft);
 

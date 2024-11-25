@@ -1,3 +1,4 @@
+"use client";
 import { AppSidebar } from "@/components/app-sidebar";
 import ExistingDrafts from "@/components/existing-drafts";
 import ExistingTemplates from "@/components/existing-templates";
@@ -16,16 +17,12 @@ import {
 } from "@/components/ui/sidebar";
 import { UserButton } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
+import { Authenticated, useConvexAuth } from "convex/react";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import { Suspense } from "react";
 
-export default async function Page() {
-  const { userId } = await auth();
-
-  if (!userId) {
-    return;
-  }
+export default function Page() {
   return (
     <SidebarProvider
       style={
@@ -60,15 +57,19 @@ export default async function Page() {
               <span className="font-semibold text-xl">Create</span>
             </button>
           </Link>
-          <section className="flex flex-col gap-5">
-            {/* <SkeletonLoader /> */}
+          {/* <section className="flex flex-col gap-5">
+           
             <Suspense fallback={<SkeletonLoader />}>
-              <ExistingDrafts />
+              <Authenticated>
+                <ExistingDrafts />
+              </Authenticated>
             </Suspense>
-          </section>
+          </section> */}
 
           <Suspense fallback={<SkeletonLoader />}>
-            <ExistingTemplates />
+            <Authenticated>
+              <ExistingTemplates />
+            </Authenticated>
           </Suspense>
           {/*  */}
           {/* <PoForm /> */}

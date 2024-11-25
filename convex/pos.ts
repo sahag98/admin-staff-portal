@@ -409,7 +409,7 @@ export const getUserPosById = query({
     const user = await GetUser(ctx);
 
     // Only allow admins to view other users' POs
-    if (user.role !== "admin" && args.user !== user._id) {
+    if (user?.role !== "admin" && args.user !== user?._id) {
       throw new Error("Unauthorized access to Purchase Orders");
     }
 
@@ -597,7 +597,7 @@ export const updatePOStatus = mutation({
     const user = await GetUser(ctx);
 
     // Check if user is admin
-    if (user.role !== "admin") {
+    if (user?.role !== "admin") {
       throw new Error(
         "Unauthorized: Only admins can approve/deny purchase orders"
       );
@@ -624,8 +624,8 @@ export const cancelPO = mutation({
     // Check if user is the owner or an admin
 
     // Only allow cancellation if user owns the PO or is an admin
-    const isOwner = po.user === user._id;
-    const isAdmin = user.role === "admin";
+    const isOwner = po.user === user?._id;
+    const isAdmin = user?.role === "admin";
     if (!isOwner && !isAdmin) {
       throw new Error("Not authorized to cancel this PO");
     }
