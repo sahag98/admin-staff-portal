@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/sidebar";
 import { api } from "@/convex/_generated/api";
 import { UserButton } from "@clerk/nextjs";
-import { Authenticated } from "convex/react";
 import { preloadQuery } from "convex/nextjs";
 import { Plus } from "lucide-react";
 import Link from "next/link";
@@ -59,14 +58,14 @@ export default async function Page() {
             </button>
           </Link>
           <section className="flex flex-col gap-5">
-            {/* <Suspense fallback={<SkeletonLoader />}> */}
-            <ExistingDrafts preloadedDrafts={preloadedDrafts} />
-            {/* </Suspense> */}
+            <Suspense fallback={<SkeletonLoader />}>
+              <ExistingDrafts preloadedDrafts={preloadedDrafts} />
+            </Suspense>
           </section>
 
-          {/* <Suspense fallback={<SkeletonLoader />}>
+          <Suspense fallback={<SkeletonLoader />}>
             <ExistingTemplates />
-          </Suspense> */}
+          </Suspense>
           {/*  */}
           {/* <PoForm /> */}
         </section>
