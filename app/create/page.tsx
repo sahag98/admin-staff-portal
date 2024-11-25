@@ -57,14 +57,13 @@ export default function Page() {
               <span className="font-semibold text-xl">Create</span>
             </button>
           </Link>
-          {/* <section className="flex flex-col gap-5">
-           
+          <section className="flex flex-col gap-5">
             <Suspense fallback={<SkeletonLoader />}>
               <Authenticated>
                 <ExistingDrafts />
               </Authenticated>
             </Suspense>
-          </section> */}
+          </section>
 
           <Suspense fallback={<SkeletonLoader />}>
             <Authenticated>
