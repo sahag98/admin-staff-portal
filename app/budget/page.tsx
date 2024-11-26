@@ -13,8 +13,11 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { api } from "@/convex/_generated/api";
+import { preloadQuery } from "convex/nextjs";
 
-export default function Page() {
+export default async function Page() {
+  const preloadedUsers = await preloadQuery(api.users.getAllUsers);
   return (
     <SidebarProvider
       style={
@@ -36,7 +39,7 @@ export default function Page() {
             </BreadcrumbList>
           </Breadcrumb>
         </header>
-        <AllUsers budget={true} />
+        <AllUsers preloadedUsers={preloadedUsers} budget={true} />
         {/* <BudgetPlanner /> */}
       </SidebarInset>
     </SidebarProvider>
