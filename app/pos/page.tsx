@@ -13,9 +13,12 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { api } from "@/convex/_generated/api";
 import { UserButton } from "@clerk/nextjs";
+import { preloadQuery } from "convex/nextjs";
 
-export default function AllPosPage() {
+export default async function AllPosPage() {
+  const preloadedPOs = await preloadQuery(api.pos.getUserPos);
   return (
     <SidebarProvider
       style={
@@ -41,7 +44,7 @@ export default function AllPosPage() {
           <UserButton />
         </header>
         <div className="p-4">
-          <PurchaseOrdersTable />
+          <PurchaseOrdersTable preloadedPOs={preloadedPOs} />
         </div>
       </SidebarInset>
     </SidebarProvider>

@@ -71,7 +71,7 @@ export const getBudgetByYear = query({
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Not authenticated");
+      return null;
     }
 
     // Get the current user to check admin status

@@ -31,9 +31,11 @@ import { useRouter } from "next/navigation";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { sendUpdate } from "@/actions/send-update";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 
 export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
   const yourPOs = useQuery(api.pos.getUserPosById, { user });
+  const currentUser = useQuery(api.users.current);
 
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
@@ -71,7 +73,11 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
       //   const curr = await getCurrentPO({ poId: orderId });
       // }
 
-      const po = await updateStatus({ po_id: orderId, status: "approved" });
+      const po = await updateStatus({
+        po_id: orderId,
+        user_name: currentUser?.name,
+        status: "approved",
+      });
       console.log("po email: ", po?.email);
       if (po) {
         sendUpdate(po?.email, po.item_name, po.amount, "Approved");
@@ -84,7 +90,11 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
 
   const handleDeny = async (orderId: Id<"pos">) => {
     try {
-      const po = await updateStatus({ po_id: orderId, status: "denied" });
+      const po = await updateStatus({
+        po_id: orderId,
+        user_name: currentUser?.name,
+        status: "denied",
+      });
 
       if (po) {
         sendUpdate(po.email, po.item_name, po.amount, "Denied");
@@ -97,7 +107,11 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
 
   const handleVoid = async (orderId: Id<"pos">) => {
     try {
-      const po = await updateStatus({ po_id: orderId, status: "voided" });
+      const po = await updateStatus({
+        po_id: orderId,
+        user_name: currentUser?.name,
+        status: "voided",
+      });
 
       if (po) {
         sendUpdate(po.email, po.item_name, po.amount, "Voided");
@@ -183,26 +197,53 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
                     {new Date(order.required_by).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
-                    {order.status === "approved" ? (
-                      <Badge className="shadow-none" variant="default">
-                        <CheckCircle className="w-4 h-4 mr-1" />
-                        Approved
-                      </Badge>
-                    ) : order.status === "denied" ? (
-                      <Badge className="shadow-none" variant="destructive">
-                        <X className="w-4 h-4 mr-1" />
-                        Denied
-                      </Badge>
-                    ) : order.status === "pending" ? (
+                    {order.po_status.status === "approved" ? (
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Badge className="shadow-none" variant="default">
+                            <CheckCircle className="w-4 h-4 mr-1" />
+                            Approved
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent className="bg-secondary">
+                          <p className="text-secondary-foreground font-medium">
+                            by {order.po_status.by}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : order.po_status.status === "denied" ? (
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Badge className="shadow-none" variant="destructive">
+                            <X className="w-4 h-4 mr-1" />
+                            Denied
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent className="bg-secondary">
+                          <p className="text-secondary-foreground font-medium">
+                            by {order.po_status.by}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    ) : order.po_status.status === "pending" ? (
                       <Badge className="shadow-none" variant="secondary">
                         <Clock className="w-4 h-4 mr-1" />
                         Pending
                       </Badge>
                     ) : (
-                      <Badge className="shadow-none" variant="outline">
-                        <Clock className="w-4 h-4 mr-1" />
-                        Voided
-                      </Badge>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Badge className="shadow-none" variant="outline">
+                            <Clock className="w-4 h-4 mr-1" />
+                            Voided
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent className="bg-secondary">
+                          <p className="text-secondary-foreground font-medium">
+                            by {order.po_status.by}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
                     )}
                   </TableCell>
                   <TableCell className="text-right">
@@ -222,25 +263,29 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
                         >
                           View details
                         </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onClick={() => handleApprove(order._id)}
-                          className="text-green-500"
-                        >
-                          Approve
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleDeny(order._id)}
-                          className="text-red-500"
-                        >
-                          Deny
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => handleVoid(order._id)}
-                          className=""
-                        >
-                          Void
-                        </DropdownMenuItem>
+                        {currentUser?._id !== order.user && (
+                          <>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => handleApprove(order._id)}
+                              className="text-green-500"
+                            >
+                              Approve
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleDeny(order._id)}
+                              className="text-red-500"
+                            >
+                              Deny
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleVoid(order._id)}
+                              className=""
+                            >
+                              Void
+                            </DropdownMenuItem>
+                          </>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>

@@ -164,7 +164,7 @@ export default defineSchema({
     nonbudget_approval: v.optional(v.string()),
     priority: v.union(v.literal("High"), v.literal("Medium"), v.literal("Low")),
     required_by: v.string(),
-    status: v.string(),
+    po_status: v.object({ by: v.optional(v.string()), status: v.string() }),
     user: v.id("users"),
     vendor: v.string(),
     fileIds: v.array(v.string()),

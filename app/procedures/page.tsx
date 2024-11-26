@@ -38,6 +38,7 @@ export default async function Page() {
           </div>
           <UserButton />
         </header>
+        <p>To be added...</p>
       </SidebarInset>
     </SidebarProvider>
   );

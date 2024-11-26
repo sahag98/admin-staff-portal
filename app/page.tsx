@@ -47,8 +47,8 @@ export default async function Page() {
             Welcome to our new platform for purchase orders, budgets and more!
           </p>
           <p>
-            Go ahead and click through each sidebar tab to get familiar with all
-            its functionalities.
+            Click through each sidebar tab to get familiar with all the pages
+            and functionalities.
           </p>
           <div className="flex bg-secondary rounded justify-center items-center flex-col gap-2 flex-1">
             <Construction size={50} />

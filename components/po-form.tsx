@@ -554,7 +554,7 @@ export function PoForm({
       required_by: values.required_by.toString(),
       vendor: values.vendor,
       user: userInfo?._id,
-      status: "pending",
+      po_status: { by: "", status: "pending" },
       fileIds,
       fileNames,
     });
@@ -1490,7 +1490,7 @@ export function PoForm({
                 disabled={isFormSubmitting}
                 type="button"
               >
-                Cancel
+                Go Back
               </Button>
             </Link>
             <Button disabled={isFormSubmitting} type="submit">

@@ -26,7 +26,7 @@ import {
   X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useQuery } from "convex/react";
+import { Preloaded, usePreloadedQuery, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import {
   Pagination,
@@ -37,8 +37,12 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-export default function PurchaseOrdersTable() {
-  const yourPOs = useQuery(api.pos.getUserPos);
+export default function PurchaseOrdersTable({
+  preloadedPOs,
+}: {
+  preloadedPOs: Preloaded<typeof api.pos.getUserPos>;
+}) {
+  const yourPOs = usePreloadedQuery(preloadedPOs);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const [sortColumn, setSortColumn] = useState<string | null>(null);
@@ -150,17 +154,17 @@ export default function PurchaseOrdersTable() {
                     {new Date(order.required_by).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
-                    {order.status === "approved" ? (
+                    {order.po_status.status === "approved" ? (
                       <Badge className="shadow-none" variant="default">
                         <CheckCircle className="w-4 h-4 mr-1" />
                         Approved
                       </Badge>
-                    ) : order.status === "denied" ? (
+                    ) : order.po_status.status === "denied" ? (
                       <Badge className="shadow-none" variant="destructive">
                         <X className="w-4 h-4 mr-1" />
                         Denied
                       </Badge>
-                    ) : order.status === "voided" ? (
+                    ) : order.po_status.status === "voided" ? (
                       <Badge className="shadow-none" variant="outline">
                         <X className="w-4 h-4 mr-1" />
                         Voided

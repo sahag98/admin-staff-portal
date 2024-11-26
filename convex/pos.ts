@@ -79,7 +79,7 @@ export const createPO = mutation({
     message: v.optional(v.string()),
     nonbudget_approval: v.optional(v.string()),
     amount: v.number(),
-    status: v.string(),
+    po_status: v.object({ by: v.string(), status: v.string() }),
     user: v.id("users"),
     fileIds: v.optional(v.array(v.string())),
     fileNames: v.optional(v.array(v.string())),
@@ -106,7 +106,7 @@ export const createPO = mutation({
         nonbudget_approval,
         priority,
         required_by,
-        status,
+        po_status,
         user,
         vendor,
         fileIds,
@@ -129,7 +129,7 @@ export const createPO = mutation({
         nonbudget_approval,
         priority,
         required_by,
-        status,
+        po_status,
         user,
         vendor,
         fileIds: fileIds || [],
@@ -592,6 +592,7 @@ export const updatePOStatus = mutation({
   args: {
     po_id: v.id("pos"),
     status: v.string(),
+    user_name: v.optional(v.string()),
   },
   async handler(ctx, args) {
     const user = await GetUser(ctx);
@@ -603,7 +604,9 @@ export const updatePOStatus = mutation({
       );
     }
 
-    await ctx.db.patch(args.po_id, { status: args.status });
+    await ctx.db.patch(args.po_id, {
+      po_status: { by: args.user_name, status: args.status },
+    });
 
     const po = await ctx.db.get(args.po_id);
 
@@ -630,7 +633,7 @@ export const cancelPO = mutation({
       throw new Error("Not authorized to cancel this PO");
     }
 
-    if (po.status !== "pending") {
+    if (po.po_status.status !== "pending") {
       throw new Error("Can only cancel pending POs");
     }
 

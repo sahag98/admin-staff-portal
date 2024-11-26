@@ -41,7 +41,7 @@ import React from "react";
 
 const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
   const { id } = params;
-  console.log(id);
+  const currentUser = useQuery(api.users.current);
   const router = useRouter();
 
   const searchParams = useSearchParams();
@@ -66,7 +66,11 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
       //   const curr = await getCurrentPO({ poId: orderId });
       // }
 
-      const po = await updateStatus({ po_id: id, status: "approved" });
+      const po = await updateStatus({
+        po_id: id,
+        user_name: currentUser?.name,
+        status: "approved",
+      });
 
       if (po) {
         sendUpdate(po?.email, po.item_name, po.amount, "Approved");
@@ -79,7 +83,11 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
 
   const handleDeny = async () => {
     try {
-      const po = await updateStatus({ po_id: id, status: "denied" });
+      const po = await updateStatus({
+        po_id: id,
+        user_name: currentUser?.name,
+        status: "denied",
+      });
 
       if (po) {
         sendUpdate(po.email, po.item_name, po.amount, "Denied");
@@ -92,7 +100,11 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
 
   const handleVoid = async () => {
     try {
-      const po = await updateStatus({ po_id: id, status: "voided" });
+      const po = await updateStatus({
+        po_id: id,
+        user_name: currentUser?.name,
+        status: "voided",
+      });
 
       if (po) {
         sendUpdate(po.email, po.item_name, po.amount, "Voided");
@@ -128,10 +140,7 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
           <div className="mx-auto max-w-2xl space-y-6">
             <div className="flex items-center justify-between">
               {isAdmin ? (
-                <Button
-                  onClick={() => router.push("/all-pos")}
-                  variant={"ghost"}
-                >
+                <Button onClick={() => router.back()} variant={"ghost"}>
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Go Back
                 </Button>
@@ -147,23 +156,23 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
 
               <Badge
                 variant={
-                  po?.status === "approved"
+                  po?.po_status.status === "approved"
                     ? "default"
-                    : po?.status === "denied"
+                    : po?.po_status.status === "denied"
                       ? "destructive"
-                      : po?.status === "voided"
+                      : po?.po_status.status === "voided"
                         ? "outline"
                         : "secondary"
                 }
                 className="h-6"
               >
                 <CheckCircle2 className="mr-1 h-3 w-3" />
-                {po?.status === "approved"
-                  ? "Approved"
-                  : po?.status === "denied"
-                    ? "Denied"
-                    : po?.status === "voided"
-                      ? "Voided"
+                {po?.po_status.status === "approved"
+                  ? `Approved by ${po.po_status.by}`
+                  : po?.po_status.status === "denied"
+                    ? `Denied by ${po.po_status.by}`
+                    : po?.po_status.status === "voided"
+                      ? `Voided by ${po.po_status.by}`
                       : "Pending"}
               </Badge>
             </div>
@@ -351,17 +360,17 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
 
                   {isAdmin && (
                     <>
-                      {po?.status !== "voided" && (
+                      {po?.po_status.status !== "voided" && (
                         <Button variant="outline" onClick={handleVoid}>
                           Void
                         </Button>
                       )}
-                      {po?.status !== "denied" && (
+                      {po?.po_status.status !== "denied" && (
                         <Button variant="destructive" onClick={handleDeny}>
                           Deny
                         </Button>
                       )}
-                      {po?.status !== "approved" && (
+                      {po?.po_status.status !== "approved" && (
                         <Button variant="success" onClick={handleApprove}>
                           Approve
                         </Button>
@@ -373,9 +382,6 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
             </Card>
           </div>
         </div>
-        {/* <div className="p-4">
-          <PurchaseOrdersTable pos={yourPOs} />
-        </div> */}
       </SidebarInset>
     </SidebarProvider>
   );
