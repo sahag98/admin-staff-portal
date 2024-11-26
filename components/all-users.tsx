@@ -5,16 +5,22 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Loader, Search } from "lucide-react";
-import { useQuery } from "convex/react";
+import { Preloaded, usePreloadedQuery, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import ApprovalBanner from "./approval-banner";
 
-export default function AllUsers({ budget }: { budget: boolean }) {
+export default function AllUsers({
+  preloadedUsers,
+  budget,
+}: {
+  preloadedUsers: Preloaded<typeof api.users.getAllUsers>;
+  budget: boolean;
+}) {
   const [searchTerm, setSearchTerm] = useState("");
 
-  const users = useQuery(api.users.getAllUsers);
+  const users = usePreloadedQuery(preloadedUsers);
 
   const currentUser = useQuery(api.users.current);
 
@@ -61,11 +67,11 @@ export default function AllUsers({ budget }: { budget: boolean }) {
                         .join("")}
                     </AvatarFallback>
                   </Avatar>
-                  <div>
+                  <div className="space-y-1">
                     <CardTitle>
                       {currentUser?.name === user.name ? "You" : user.name}
                     </CardTitle>
-                    <p className="text-sm text-gray-500">{user.role}</p>
+                    <p className="text-sm italic text-gray-500">{user.role}</p>
                   </div>
                 </CardHeader>
                 <CardContent className="flex items-end justify-between">

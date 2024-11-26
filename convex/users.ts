@@ -77,7 +77,7 @@ export const getAllShareUsers = query({
     // Get the authenticated user's identity
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthenticated call to query");
+      return;
     }
 
     // Get the user from the database
@@ -103,11 +103,10 @@ export const getAllShareUsers = query({
 export const getAllUsers = query({
   args: {},
   async handler(ctx) {
-    console.log("here");
     // Get the authenticated user's identity
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthenticated call to query");
+      return;
     }
 
     // Get the user from the database
@@ -128,7 +127,6 @@ export const getAllUsers = query({
     // If user is admin, return all users
     const allUsers = await ctx.db.query("users").collect();
 
-    console.log("all convex: ", allUsers);
     return allUsers;
   },
 });

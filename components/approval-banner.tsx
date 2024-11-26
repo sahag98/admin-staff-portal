@@ -8,7 +8,9 @@ import { Badge } from "./ui/badge";
 const ApprovalBanner = ({ user }: { user: Doc<"users"> }) => {
   const userPOs = useQuery(api.pos.getUserPosById, { user: user._id });
 
-  const unapprovedPOS = userPOs?.filter((po) => po.status === "pending");
+  const unapprovedPOS = userPOs?.filter(
+    (po) => po.po_status.status === "pending"
+  );
 
   if (unapprovedPOS?.length == 0) return;
   return (
