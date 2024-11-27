@@ -73,8 +73,6 @@ export const formSchema = z
     required_by: z.date({
       required_error: "A date is required",
     }),
-    // isSharing: z.string(),
-    // share_user: z.string(),
     template: z.boolean().default(false),
     template_name: z.string(),
     priority: z.enum(["High", "Medium", "Low"]),
@@ -130,7 +128,12 @@ export const formSchema = z
       "Admin Expense: Meals/Gas/Supplies/Office",
     ]),
     isBudgeted: z.string(),
-    budget_num: z.optional(z.number()),
+    budget_num: z.optional(
+      z.object({
+        budget_num: z.number(),
+        description: z.string(),
+      })
+    ),
     amount: z.number({ required_error: "At least one item is required" }),
     items: z.array(
       z.object({
@@ -295,7 +298,9 @@ export function PoForm({
 
   const [files, setFiles] = useState<File[]>([]);
 
-  const budgetNums = userInfo?.po_nums;
+  const budgetValues = userInfo?.po_nums;
+
+  console.log("budget values: ", budgetValues);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -1158,37 +1163,53 @@ export function PoForm({
                             )}
                           >
                             {field.value
-                              ? budgetNums &&
-                                budgetNums.find((num) => num === field.value)
+                              ? `${field.value.budget_num} - ${field.value.description}`
                               : "Select budget number"}
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className="w-[200px] p-0">
+                      <PopoverContent className="w-[600px] p-0">
                         <Command>
-                          <CommandInput placeholder="Search budget number..." />
+                          <CommandInput placeholder="Search by description..." />
                           <CommandList>
                             <CommandGroup>
-                              {budgetNums &&
-                                budgetNums.map((num) => (
+                              {budgetValues &&
+                                budgetValues.map((value) => (
                                   <CommandItem
-                                    value={num.toString()}
-                                    key={num}
+                                    value={value.description}
+                                    key={`${value.budget_num}-${value.description}`}
                                     onSelect={() => {
-                                      form.setValue("budget_num", num);
+                                      form.setValue("budget_num", value);
                                       setIsBudgetNumOpen(false);
                                     }}
                                   >
                                     <Check
                                       className={cn(
                                         "mr-2 h-4 w-4",
-                                        num === field.value
+                                        value.description ===
+                                          field.value?.description
                                           ? "opacity-100"
                                           : "opacity-0"
                                       )}
                                     />
-                                    {num}
+                                    <div className="gap-10 w-full grid grid-cols-5">
+                                      <span className="w-1/4">
+                                        {value.category}
+                                      </span>
+                                      <span className="w-1/4">
+                                        {value.section}
+                                      </span>
+                                      <span className="w-1/4">
+                                        {value.description}
+                                      </span>
+                                      <span className="w-1/4">
+                                        {value.initials}
+                                      </span>
+                                      <span className="w-1/4">
+                                        #{value.budget_num}
+                                      </span>
+                                    </div>
                                   </CommandItem>
                                 ))}
                             </CommandGroup>

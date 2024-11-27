@@ -294,7 +294,7 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
                       <div className="text-sm text-muted-foreground">
                         PO Number
                       </div>
-                      <div className="flex items-center">{po.budget_num}</div>
+                      <div className="flex items-center">{`${po.budget_num.budget_num} - ${po.budget_num.description}`}</div>
                     </div>
                   ) : (
                     <div className="space-y-2">
@@ -358,7 +358,7 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
                     Download Attachments ({po?.fileIds?.length ?? 0})
                   </Button>
 
-                  {isAdmin && (
+                  {isAdmin && po?.user !== currentUser?._id && (
                     <>
                       {po?.po_status.status !== "voided" && (
                         <Button variant="outline" onClick={handleVoid}>

@@ -14,7 +14,7 @@ export async function sendUpdate(
   const resend = new Resend("re_gLWkB4j8_696ABZnRK56f1zEieEeZVUt2");
 
   const { data, error } = await resend.emails.send({
-    from: "Juan <onboarding@resend.dev>",
+    from: "Staff <onboarding@resend.dev>",
     to: [email],
     subject: "PO Status",
     react: UpdateTemplate(email, items, amount, status),

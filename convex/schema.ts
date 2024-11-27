@@ -4,7 +4,15 @@ import { v } from "convex/values";
 export default defineSchema({
   po_drafts: defineTable({
     amount: v.optional(v.number()),
-    budget_num: v.optional(v.number()),
+    budget_num: v.optional(
+      v.object({
+        budget_num: v.number(),
+        category: v.optional(v.string()),
+        initials: v.optional(v.string()),
+        section: v.optional(v.string()),
+        description: v.string(),
+      })
+    ),
     template: v.optional(v.boolean()),
     template_name: v.optional(v.string()),
     email: v.optional(v.string()),
@@ -94,7 +102,12 @@ export default defineSchema({
   }),
   pos: defineTable({
     amount: v.number(),
-    budget_num: v.optional(v.number()),
+    budget_num: v.optional(
+      v.object({
+        budget_num: v.number(),
+        description: v.string(),
+      })
+    ),
     template: v.boolean(),
     template_name: v.string(),
     email: v.string(),
@@ -174,7 +187,15 @@ export default defineSchema({
     name: v.string(),
     budget: v.number(),
     role: v.string(),
-    po_nums: v.array(v.number()),
+    po_nums: v.array(
+      v.object({
+        category: v.string(),
+        section: v.string(),
+        description: v.string(),
+        initials: v.string(),
+        budget_num: v.number(),
+      })
+    ),
     budgetItems: v.optional(
       v.array(
         v.object({

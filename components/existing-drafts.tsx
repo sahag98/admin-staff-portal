@@ -71,7 +71,11 @@ const ExistingDrafts = ({
               <CardContent className="px-0">
                 <ul>
                   {draft.budget_num && (
-                    <li className="text-sm">Budget num: {draft?.budget_num}</li>
+                    <li className="text-sm">
+                      {" "}
+                      Budget num:{draft?.budget_num.budget_num} -{" "}
+                      {draft.budget_num.description}
+                    </li>
                   )}
                   {draft.event_name && (
                     <li className="text-sm">Event name: {draft?.event_name}</li>

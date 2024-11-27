@@ -68,7 +68,12 @@ export const createPO = mutation({
       v.literal("Admin Expense: Meals/Gas/Supplies/Office")
     ),
     isBudgeted: v.string(),
-    budget_num: v.optional(v.number()),
+    budget_num: v.optional(
+      v.object({
+        budget_num: v.number(),
+        description: v.string(),
+      })
+    ),
     item_name: v.array(
       v.object({
         name: v.string(),
@@ -144,7 +149,15 @@ export const createPO = mutation({
 export const createPODraft = mutation({
   args: {
     amount: v.optional(v.number()),
-    budget_num: v.optional(v.number()),
+    budget_num: v.optional(
+      v.object({
+        budget_num: v.number(),
+        category: v.optional(v.string()),
+        initials: v.optional(v.string()),
+        section: v.optional(v.string()),
+        description: v.string(),
+      })
+    ),
     template: v.optional(v.boolean()),
     template_name: v.optional(v.string()),
     email: v.optional(v.string()),
@@ -448,7 +461,12 @@ export const updateDraft = mutation({
   args: {
     draft_id: v.id("po_drafts"),
     amount: v.optional(v.number()),
-    budget_num: v.optional(v.number()),
+    budget_num: v.optional(
+      v.object({
+        budget_num: v.number(),
+        description: v.string(),
+      })
+    ),
     template: v.optional(v.boolean()),
     template_name: v.optional(v.string()),
     email: v.optional(v.string()),
