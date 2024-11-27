@@ -208,7 +208,7 @@ export const addBudgetItem = mutation({
         ...budgetItems,
         { title: args.title, budget_num: args.budget_num },
       ],
-      po_nums: [...(user.po_nums || []), args.budget_num],
+      // po_nums: [...(user.po_nums || []), args.budget_num],
     });
   },
 });
@@ -242,13 +242,13 @@ export const deleteBudgetItem = mutation({
       (item) => item.budget_num !== args.budget_num
     );
 
-    const updatedPoNums = (user.po_nums || []).filter(
-      (num) => num !== args.budget_num
-    );
+    // const updatedPoNums = (user.po_nums || []).filter(
+    //   (num) => num !== args.budget_num
+    // );
 
     await ctx.db.patch(args.userId, {
       budgetItems: updatedBudgetItems,
-      po_nums: updatedPoNums,
+      // po_nums: updatedPoNums,
     });
   },
 });
@@ -297,13 +297,13 @@ export const editBudgetItem = mutation({
     );
 
     // Update po_nums array
-    const updatedPoNums = user.po_nums.map((num) =>
-      num === args.oldBudgetNum ? args.budget_num : num
-    );
+    // const updatedPoNums = user.po_nums.map((num) =>
+    //   num === args.oldBudgetNum ? args.budget_num : num
+    // );
 
     await ctx.db.patch(args.userId, {
       budgetItems: updatedBudgetItems,
-      po_nums: updatedPoNums,
+      // po_nums: updatedPoNums,
     });
   },
 });
