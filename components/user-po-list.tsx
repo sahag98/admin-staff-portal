@@ -79,8 +79,14 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
         status: "approved",
       });
       console.log("po email: ", po?.email);
-      if (po) {
-        sendUpdate(po?.email, po.item_name, po.amount, "Approved");
+      if (po && currentUser) {
+        sendUpdate(
+          po?.email,
+          po.item_name,
+          currentUser.name,
+          po.amount,
+          "Approved"
+        );
       }
     } catch (error) {
       console.error("Failed to approve PO:", error);
@@ -96,8 +102,14 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
         status: "denied",
       });
 
-      if (po) {
-        sendUpdate(po.email, po.item_name, po.amount, "Denied");
+      if (po && currentUser) {
+        sendUpdate(
+          po.email,
+          po.item_name,
+          currentUser.name,
+          po.amount,
+          "Denied"
+        );
       }
     } catch (error) {
       console.error("Failed to deny PO:", error);
@@ -113,8 +125,14 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
         status: "voided",
       });
 
-      if (po) {
-        sendUpdate(po.email, po.item_name, po.amount, "Voided");
+      if (po && currentUser) {
+        sendUpdate(
+          po.email,
+          po.item_name,
+          currentUser.name,
+          po.amount,
+          "Voided"
+        );
       }
     } catch (error) {
       console.error("Failed to deny PO:", error);
