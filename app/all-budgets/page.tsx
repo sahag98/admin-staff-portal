@@ -44,7 +44,6 @@ export default async function Page() {
         <AllUsers
           preloadedUser={preloadedUser}
           preloadedUsers={preloadedUsers}
-          admin={true}
           budget={true}
         />
       </SidebarInset>
