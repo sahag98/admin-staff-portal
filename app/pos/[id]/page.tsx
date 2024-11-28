@@ -52,11 +52,11 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
         status: "approved",
       });
 
-      if (po) {
+      if (po && currentUser) {
         sendUpdate(
           po?.email,
           po.item_name,
-          currentUser?.name!,
+          currentUser?.name,
           po.amount,
           "Approved"
         );
@@ -75,11 +75,11 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
         status: "denied",
       });
 
-      if (po) {
+      if (po && currentUser) {
         sendUpdate(
           po.email,
           po.item_name,
-          currentUser?.name!,
+          currentUser?.name,
           po.amount,
           "Denied"
         );
@@ -98,11 +98,11 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
         status: "voided",
       });
 
-      if (po) {
+      if (po && currentUser) {
         sendUpdate(
           po.email,
           po.item_name,
-          currentUser?.name!,
+          currentUser?.name,
           po.amount,
           "Voided"
         );

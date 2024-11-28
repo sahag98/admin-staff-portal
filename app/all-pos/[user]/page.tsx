@@ -1,4 +1,3 @@
-import { AppSidebar } from "@/components/app-sidebar";
 import PreloadedSidebar from "@/components/preloaded-sidebar";
 
 import {
@@ -16,9 +15,7 @@ import {
 } from "@/components/ui/sidebar";
 import UserName from "@/components/user-name";
 import PurchaseOrdersTable from "@/components/user-po-list";
-import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import { preloadQuery } from "convex/nextjs";
 
 export default async function Page({
   params,
@@ -26,7 +23,6 @@ export default async function Page({
   params: { user: Id<"users"> };
 }) {
   const { user } = params;
-  const preloadedUser = await preloadQuery(api.users.current);
   return (
     <SidebarProvider
       style={

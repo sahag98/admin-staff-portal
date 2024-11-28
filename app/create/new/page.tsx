@@ -12,10 +12,8 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { UserButton } from "@clerk/nextjs";
-import { preloadQuery } from "convex/nextjs";
 
 export default async function Page({
   searchParams,

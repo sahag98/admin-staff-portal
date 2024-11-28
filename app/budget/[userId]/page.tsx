@@ -1,5 +1,3 @@
-import { Metadata } from "next";
-
 import { Id } from "@/convex/_generated/dataModel";
 import IndividualBudget from "@/components/individual-budget";
 import {
@@ -7,7 +5,6 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@/components/ui/separator";
 import {
   Breadcrumb,
@@ -17,14 +14,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { preloadQuery } from "convex/nextjs";
-import { api } from "@/convex/_generated/api";
 import PreloadedSidebar from "@/components/preloaded-sidebar";
-
-export const metadata: Metadata = {
-  title: "Individual Budget",
-  description: "View and edit individual user budget",
-};
 
 export default async function BudgetPage({
   params,
@@ -33,9 +23,6 @@ export default async function BudgetPage({
   params: { userId: Id<"users"> };
   searchParams: { admin: boolean };
 }) {
-  const preloadedUser = await preloadQuery(api.users.current);
-
-  console.log(searchParams);
   return (
     <SidebarProvider
       style={

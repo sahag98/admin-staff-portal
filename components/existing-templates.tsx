@@ -1,17 +1,11 @@
 "use client";
 import { api } from "@/convex/_generated/api";
-import {
-  Preloaded,
-  useMutation,
-  usePreloadedQuery,
-  useQuery,
-} from "convex/react";
+import { Preloaded, useMutation, usePreloadedQuery } from "convex/react";
 import { LayoutTemplate, Trash2 } from "lucide-react";
 import React from "react";
 import { Card, CardContent, CardFooter, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import Link from "next/link";
-import SkeletonLoader from "./skeleton-loader";
 import TemplateLoader from "./template-loader";
 
 const ExistingTemplates = ({

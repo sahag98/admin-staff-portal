@@ -1,7 +1,5 @@
 import { cn } from "@/lib/utils";
-import { NotepadTextDashed } from "lucide-react";
 
-// components/SkeletonLoader.tsx
 export default function SkeletonLoader({ icon }: { icon: any }) {
   return (
     <div
