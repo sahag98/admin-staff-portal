@@ -29,17 +29,8 @@ import {
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useAction, useMutation, useQuery } from "convex/react";
-import {
-  Download,
-  Eye,
-  File,
-  FileIcon,
-  FileUp,
-  Plus,
-  Trash,
-} from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { Eye, FileIcon, FileUp, Plus, Trash } from "lucide-react";
+
 import React, { useState } from "react";
 
 const IndividualPolicyPage = ({
