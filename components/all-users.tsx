@@ -15,9 +15,7 @@ export default function AllUsers({
   preloadedUser,
   preloadedUsers,
   budget,
-  admin,
 }: {
-  admin: boolean;
   preloadedUser: Preloaded<typeof api.users.current>;
   preloadedUsers: Preloaded<typeof api.users.getAllUsers>;
   budget: boolean;
