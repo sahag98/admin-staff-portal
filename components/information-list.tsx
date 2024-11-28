@@ -1,11 +1,11 @@
 "use client";
 
 import { api } from "@/convex/_generated/api";
-import { Preloaded, useAction, usePreloadedQuery } from "convex/react";
+import { Preloaded, usePreloadedQuery } from "convex/react";
 import React from "react";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
-import { Info, Shield } from "lucide-react";
+import { Info } from "lucide-react";
 import Link from "next/link";
 
 const InformationList = ({
@@ -14,7 +14,6 @@ const InformationList = ({
   preloadedInformations: Preloaded<typeof api.resource.getProcedures>;
 }) => {
   const informations = usePreloadedQuery(preloadedInformations);
-  const getFileUrl = useAction(api.files.getUrl);
 
   if (informations?.length === 0) {
     return;

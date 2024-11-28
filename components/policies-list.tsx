@@ -1,7 +1,7 @@
 "use client";
 
 import { api } from "@/convex/_generated/api";
-import { Preloaded, useAction, usePreloadedQuery } from "convex/react";
+import { Preloaded, usePreloadedQuery } from "convex/react";
 import React from "react";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "./ui/card";
@@ -14,7 +14,6 @@ const PoliciesList = ({
   preloadedPolicies: Preloaded<typeof api.resource.getPolicies>;
 }) => {
   const policies = usePreloadedQuery(preloadedPolicies);
-  const getFileUrl = useAction(api.files.getUrl);
 
   if (policies?.length === 0) {
     return;
