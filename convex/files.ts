@@ -1,5 +1,6 @@
 import { v } from "convex/values";
 import { action } from "./_generated/server";
+import { mutation } from "./_generated/server";
 // import { StorageId } from "./_generated/dataModel";
 
 export const generateUploadUrl = action({
@@ -20,3 +21,18 @@ export const getUrl = action({
     return await ctx.storage.getUrl(args.storageId);
   },
 });
+
+// export const uploadFile = mutation({
+//   args: {
+//     fileName: v.string(),
+//     fileData: v.string(), // Assuming base64 or some form of file data
+//   },
+//   async handler(ctx, args) {
+//     const { fileName, fileData } = args;
+
+//     // Logic to store the file and get a storage ID
+//     const storageId = await ctx.storage.put(fileData);
+
+//     return { storageId, fileName };
+//   },
+// });

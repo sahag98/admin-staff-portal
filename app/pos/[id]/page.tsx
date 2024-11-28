@@ -330,34 +330,43 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
                   </div>
                 </div>
 
-                <div className="flex justify-end space-x-2">
-                  <Button
-                    variant="outline"
-                    disabled={!po?.fileIds || po.fileIds.length === 0}
-                    onClick={async () => {
-                      if (po?.fileIds && po.fileIds.length > 0) {
-                        const urls = [];
-                        for (const fileId of po.fileIds) {
-                          const url = await getFileUrl({ storageId: fileId });
-                          if (url) {
-                            urls.push(url);
-                          }
-                        }
-                        const linksHtml = urls
-                          .map(
-                            (url, index) =>
-                              `<p><a href="${url}" target="_blank">PO Attachment ${index + 1}</a></p>`
-                          )
-                          .join("");
-                        const newTab = window.open();
-                        newTab?.document.write(`<div>${linksHtml}</div>`);
-                        newTab?.document.close();
-                      }
-                    }}
-                  >
-                    Download Attachments ({po?.fileIds?.length ?? 0})
-                  </Button>
+                <Separator />
 
+                <div className="space-y-4">
+                  <h2 className="text-lg font-bold">Attachments</h2>
+                  <Table className="bg-secondary rounded-md">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Attachment</TableHead>
+                        <TableHead>Action</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {po?.fileIds?.map((fileId, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{po.fileNames[index]}</TableCell>
+                          <TableCell>
+                            <Button
+                              variant="outline"
+                              onClick={async () => {
+                                const url = await getFileUrl({
+                                  storageId: fileId,
+                                });
+                                if (url) {
+                                  window.open(url, "_blank");
+                                }
+                              }}
+                            >
+                              View
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+
+                <div className="flex justify-end space-x-2">
                   {isAdmin && po?.user !== currentUser?._id && (
                     <>
                       {po?.po_status.status !== "voided" && (

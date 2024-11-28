@@ -1,4 +1,5 @@
 import { AppSidebar } from "@/components/app-sidebar";
+import InformationList from "@/components/information-list";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,9 +12,15 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
+import UploadFiles from "@/components/upload-files";
+import { api } from "@/convex/_generated/api";
 import { UserButton } from "@clerk/nextjs";
+import { preloadQuery } from "convex/nextjs";
 
 export default async function Page() {
+  const preloadedInformations = await preloadQuery(
+    api.resource.getInformations
+  );
   return (
     <SidebarProvider
       style={
@@ -38,7 +45,10 @@ export default async function Page() {
           </div>
           <UserButton />
         </header>
-        <p>To be added...</p>
+        <div className="p-4 space-y-5">
+          <UploadFiles type="information" />
+          <InformationList preloadedInformations={preloadedInformations} />
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );

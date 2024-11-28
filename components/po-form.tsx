@@ -1169,15 +1169,17 @@ export function PoForm({
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
-                      <PopoverContent className="w-[600px] p-0">
+                      <PopoverContent className="w-[700px] p-0">
                         <Command>
-                          <CommandInput placeholder="Search by description..." />
+                          <CommandInput placeholder="Search by budget number..." />
                           <CommandList>
                             <CommandGroup>
                               {budgetValues &&
                                 budgetValues.map((value) => (
                                   <CommandItem
-                                    value={value.description}
+                                    //@ts-expect-error
+                                    value={value.budget_num}
+                                    className="border-b"
                                     key={`${value.budget_num}-${value.description}`}
                                     onSelect={() => {
                                       form.setValue("budget_num", value);
@@ -1193,20 +1195,14 @@ export function PoForm({
                                           : "opacity-0"
                                       )}
                                     />
-                                    <div className="gap-10 w-full grid grid-cols-5">
-                                      <span className="w-1/4">
-                                        {value.category}
-                                      </span>
-                                      <span className="w-1/4">
-                                        {value.section}
-                                      </span>
-                                      <span className="w-1/4">
+                                    <div className="grid items-center grid-cols-[1fr_1fr_3fr_0.3fr_0.3fr] gap-2 w-full">
+                                      <span className="">{value.category}</span>
+                                      <span className="">{value.section}</span>
+                                      <span className="">
                                         {value.description}
                                       </span>
-                                      <span className="w-1/4">
-                                        {value.initials}
-                                      </span>
-                                      <span className="w-1/4">
+                                      <span className="">{value.initials}</span>
+                                      <span className="">
                                         #{value.budget_num}
                                       </span>
                                     </div>

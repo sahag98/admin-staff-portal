@@ -2,6 +2,12 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+  resource: defineTable({
+    title: v.string(),
+    type: v.string(),
+    fileIds: v.array(v.string()),
+    fileNames: v.array(v.string()),
+  }),
   po_drafts: defineTable({
     amount: v.optional(v.number()),
     budget_num: v.optional(
