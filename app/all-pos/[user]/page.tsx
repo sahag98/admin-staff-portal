@@ -1,4 +1,5 @@
 import { AppSidebar } from "@/components/app-sidebar";
+import PreloadedSidebar from "@/components/preloaded-sidebar";
 
 import {
   Breadcrumb,
@@ -15,10 +16,17 @@ import {
 } from "@/components/ui/sidebar";
 import UserName from "@/components/user-name";
 import PurchaseOrdersTable from "@/components/user-po-list";
+import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { preloadQuery } from "convex/nextjs";
 
-export default function Page({ params }: { params: { user: Id<"users"> } }) {
+export default async function Page({
+  params,
+}: {
+  params: { user: Id<"users"> };
+}) {
   const { user } = params;
+  const preloadedUser = await preloadQuery(api.users.current);
   return (
     <SidebarProvider
       style={
@@ -27,7 +35,7 @@ export default function Page({ params }: { params: { user: Id<"users"> } }) {
         } as React.CSSProperties
       }
     >
-      <AppSidebar />
+      <PreloadedSidebar />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 px-4">
           <SidebarTrigger className="-ml-1" />

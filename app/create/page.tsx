@@ -1,7 +1,7 @@
-import { AppSidebar } from "@/components/app-sidebar";
 import ExistingDrafts from "@/components/existing-drafts";
 import ExistingTemplates from "@/components/existing-templates";
-import SkeletonLoader from "@/components/skeleton-loader";
+import PreloadedSidebar from "@/components/preloaded-sidebar";
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -19,10 +19,11 @@ import { UserButton } from "@clerk/nextjs";
 import { preloadQuery } from "convex/nextjs";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-import { Suspense } from "react";
 
 export default async function Page() {
   const preloadedDrafts = await preloadQuery(api.pos.getUserPODrafts);
+  const preloadedTemplates = await preloadQuery(api.pos.getUserTemplatePos);
+
   return (
     <SidebarProvider
       style={
@@ -31,7 +32,7 @@ export default async function Page() {
         } as React.CSSProperties
       }
     >
-      <AppSidebar />
+      <PreloadedSidebar />
       <SidebarInset>
         <header className="flex h-16 w-full justify-between shrink-0 items-center gap-2 px-4">
           <div className="flex items-center">
@@ -58,14 +59,11 @@ export default async function Page() {
             </button>
           </Link>
           <section className="flex flex-col gap-5">
-            <Suspense fallback={<SkeletonLoader />}>
-              <ExistingDrafts preloadedDrafts={preloadedDrafts} />
-            </Suspense>
+            <ExistingDrafts preloadedDrafts={preloadedDrafts} />
           </section>
 
-          <Suspense fallback={<SkeletonLoader />}>
-            <ExistingTemplates />
-          </Suspense>
+          <ExistingTemplates preloadedTemplates={preloadedTemplates} />
+
           {/*  */}
           {/* <PoForm /> */}
         </section>

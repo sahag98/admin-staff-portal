@@ -300,7 +300,7 @@ export default function IndividualBudget({ userId }: { userId: Id<"users"> }) {
     budget_num: number;
   } | null>(null);
 
-  if (!user) return <div>Loading...</div>;
+  if (!user) return null;
 
   return (
     <div className="container mx-auto px-4 py-8">

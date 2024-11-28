@@ -1,5 +1,6 @@
 import AllUsers from "@/components/all-users";
-import { AppSidebar } from "@/components/app-sidebar";
+
+import PreloadedSidebar from "@/components/preloaded-sidebar";
 
 import {
   Breadcrumb,
@@ -18,6 +19,7 @@ import { preloadQuery } from "convex/nextjs";
 
 export default async function Page() {
   const preloadedUsers = await preloadQuery(api.users.getAllUsers);
+  const preloadedUser = await preloadQuery(api.users.current);
   return (
     <SidebarProvider
       style={
@@ -26,7 +28,7 @@ export default async function Page() {
         } as React.CSSProperties
       }
     >
-      <AppSidebar />
+      <PreloadedSidebar />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 px-4">
           <SidebarTrigger className="-ml-1" />
@@ -34,13 +36,17 @@ export default async function Page() {
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbPage>Budget</BreadcrumbPage>
+                <BreadcrumbPage>All Budgets</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
         </header>
-        <AllUsers preloadedUsers={preloadedUsers} budget={true} />
-        {/* <BudgetPlanner /> */}
+        <AllUsers
+          preloadedUser={preloadedUser}
+          preloadedUsers={preloadedUsers}
+          admin={true}
+          budget={true}
+        />
       </SidebarInset>
     </SidebarProvider>
   );

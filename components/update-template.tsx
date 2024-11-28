@@ -17,6 +17,7 @@ export const UpdateTemplate = (
   email: string,
 
   items: Array<any>,
+  approved_by: string,
   amount: number,
   status: string
 ) => {
@@ -43,7 +44,7 @@ export const UpdateTemplate = (
         <Body className="bg-white my-auto mx-auto font-sans px-2">
           <Container className="border border-solid border-[#eaeaea] bg-[#FAFAFA] rounded my-[40px] mx-auto p-[20px] max-w-[465px]">
             <Heading className="text-black text-[28px] font-bold text-center p-0 my-[10px] mx-0">
-              Your PO has been {status}
+              Your PO has been {status} by {approved_by}
             </Heading>
 
             <Text className="text-black text-[15px] leading-[24px]">

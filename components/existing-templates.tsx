@@ -1,23 +1,35 @@
 "use client";
 import { api } from "@/convex/_generated/api";
-import { useMutation, useQuery } from "convex/react";
+import {
+  Preloaded,
+  useMutation,
+  usePreloadedQuery,
+  useQuery,
+} from "convex/react";
 import { LayoutTemplate, Trash2 } from "lucide-react";
 import React from "react";
 import { Card, CardContent, CardFooter, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import SkeletonLoader from "./skeleton-loader";
+import TemplateLoader from "./template-loader";
 
-const ExistingTemplates = () => {
-  const templates = useQuery(api.pos.getUserTemplatePos);
+const ExistingTemplates = ({
+  preloadedTemplates,
+}: {
+  preloadedTemplates: Preloaded<typeof api.pos.getUserTemplatePos>;
+}) => {
+  const templates = usePreloadedQuery(preloadedTemplates);
   const deleteTemplate = useMutation(api.pos.deleteTemplate);
 
   if (!templates) {
     return (
-      <div className="flex-1 flex flex-col gap-3">
-        <LayoutTemplate size={60} />
-        <h2 className="text-xl font-semibold">Templates (...)</h2>
-        <SkeletonLoader />
+      <div className="flex-1 flex flex-col gap-0">
+        <section className="flex items-center gap-1">
+          <LayoutTemplate size={28} />
+          <h2 className="text-xl flex font-semibold gap-2">Templates</h2>
+        </section>
+        <TemplateLoader icon={<LayoutTemplate size={60} />} />
       </div>
     );
   }
@@ -26,7 +38,7 @@ const ExistingTemplates = () => {
       <section className="flex items-center gap-1">
         <LayoutTemplate size={28} />
         <h2 className="text-xl flex font-semibold gap-2">
-          Templates{" "}
+          Templates
           <span className="bg-secondary text-secondary-foreground text-sm flex items-center justify-center rounded-full size-7">
             {templates?.length}
           </span>

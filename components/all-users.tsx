@@ -12,9 +12,13 @@ import Link from "next/link";
 import ApprovalBanner from "./approval-banner";
 
 export default function AllUsers({
+  preloadedUser,
   preloadedUsers,
   budget,
+  admin,
 }: {
+  admin: boolean;
+  preloadedUser: Preloaded<typeof api.users.current>;
   preloadedUsers: Preloaded<typeof api.users.getAllUsers>;
   budget: boolean;
 }) {
@@ -22,7 +26,7 @@ export default function AllUsers({
 
   const users = usePreloadedQuery(preloadedUsers);
 
-  const currentUser = useQuery(api.users.current);
+  const currentUser = usePreloadedQuery(preloadedUser);
 
   const filteredUsers = users?.filter(
     (user) =>
@@ -77,7 +81,9 @@ export default function AllUsers({
                 <CardContent className="flex items-end justify-between">
                   <Link
                     href={
-                      budget ? `/budget/${user._id}` : `/all-pos/${user._id}`
+                      budget
+                        ? `/budget/${user._id}?admin=true`
+                        : `/all-pos/${user._id}`
                     }
                   >
                     <Button>{budget ? "View Budget" : "View POs"}</Button>

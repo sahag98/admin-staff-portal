@@ -1,13 +1,11 @@
 "use server";
-import { EmailTemplate } from "@/components/email-template";
-import { formSchema } from "@/components/po-form";
 import { UpdateTemplate } from "@/components/update-template";
-import { Id } from "@/convex/_generated/dataModel";
 import { Resend } from "resend";
-import { z } from "zod";
+
 export async function sendUpdate(
   email: string,
   items: Array<Object>,
+  approved_by: string,
   amount: number,
   status: string
 ) {
@@ -17,7 +15,7 @@ export async function sendUpdate(
     from: "Staff <onboarding@resend.dev>",
     to: [email],
     subject: "PO Status",
-    react: UpdateTemplate(email, items, amount, status),
+    react: UpdateTemplate(email, items, approved_by, amount, status),
   });
 
   console.log("data: ", data);

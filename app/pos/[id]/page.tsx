@@ -1,14 +1,6 @@
 "use client";
-
 import { sendUpdate } from "@/actions/send-update";
-import { AppSidebar } from "@/components/app-sidebar";
 import { Badge } from "@/components/ui/badge";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-} from "@/components/ui/breadcrumb";
 import {
   Table,
   TableBody,
@@ -20,11 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useQuery, useAction, useMutation } from "convex/react";
@@ -48,8 +36,6 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
 
   const isAdmin = searchParams.get("admin");
 
-  console.log("is admin: ", isAdmin);
-
   const po = useQuery(api.pos.getPo, {
     poId: id,
   });
@@ -60,12 +46,6 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
 
   const handleApprove = async () => {
     try {
-      // console.log(currentPO);
-
-      // if (orderId) {
-      //   const curr = await getCurrentPO({ poId: orderId });
-      // }
-
       const po = await updateStatus({
         po_id: id,
         user_name: currentUser?.name,
@@ -73,7 +53,13 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
       });
 
       if (po) {
-        sendUpdate(po?.email, po.item_name, po.amount, "Approved");
+        sendUpdate(
+          po?.email,
+          po.item_name,
+          currentUser?.name!,
+          po.amount,
+          "Approved"
+        );
       }
     } catch (error) {
       console.error("Failed to approve PO:", error);
@@ -90,7 +76,13 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
       });
 
       if (po) {
-        sendUpdate(po.email, po.item_name, po.amount, "Denied");
+        sendUpdate(
+          po.email,
+          po.item_name,
+          currentUser?.name!,
+          po.amount,
+          "Denied"
+        );
       }
     } catch (error) {
       console.error("Failed to deny PO:", error);
@@ -107,7 +99,13 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
       });
 
       if (po) {
-        sendUpdate(po.email, po.item_name, po.amount, "Voided");
+        sendUpdate(
+          po.email,
+          po.item_name,
+          currentUser?.name!,
+          po.amount,
+          "Voided"
+        );
       }
     } catch (error) {
       console.error("Failed to void PO:", error);
@@ -123,19 +121,7 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
         } as React.CSSProperties
       }
     >
-      <AppSidebar />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbPage>{isAdmin ? "PO" : "Your POs"}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </header>
         <div className="min-h-screen bg-gray-50/50 p-4 md:p-6 lg:p-8">
           <div className="mx-auto max-w-2xl space-y-6">
             <div className="flex items-center justify-between">
@@ -334,36 +320,42 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
 
                 <div className="space-y-4">
                   <h2 className="text-lg font-bold">Attachments</h2>
-                  <Table className="bg-secondary rounded-md">
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Attachment</TableHead>
-                        <TableHead>Action</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {po?.fileIds?.map((fileId, index) => (
-                        <TableRow key={index}>
-                          <TableCell>{po.fileNames[index]}</TableCell>
-                          <TableCell>
-                            <Button
-                              variant="outline"
-                              onClick={async () => {
-                                const url = await getFileUrl({
-                                  storageId: fileId,
-                                });
-                                if (url) {
-                                  window.open(url, "_blank");
-                                }
-                              }}
-                            >
-                              View
-                            </Button>
-                          </TableCell>
+                  {po?.fileIds.length === 0 ? (
+                    <div>
+                      <span>No attachments</span>
+                    </div>
+                  ) : (
+                    <Table className="bg-secondary rounded-md">
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Attachment</TableHead>
+                          <TableHead>Action</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                      </TableHeader>
+                      <TableBody>
+                        {po?.fileIds?.map((fileId, index) => (
+                          <TableRow key={index}>
+                            <TableCell>{po.fileNames[index]}</TableCell>
+                            <TableCell>
+                              <Button
+                                variant="outline"
+                                onClick={async () => {
+                                  const url = await getFileUrl({
+                                    storageId: fileId,
+                                  });
+                                  if (url) {
+                                    window.open(url, "_blank");
+                                  }
+                                }}
+                              >
+                                View
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
                 </div>
 
                 <div className="flex justify-end space-x-2">

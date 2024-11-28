@@ -1,4 +1,4 @@
-import { AppSidebar } from "@/components/app-sidebar";
+import PreloadedSidebar from "@/components/preloaded-sidebar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,7 +12,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 
-export default function Page() {
+export default async function Page() {
   return (
     <SidebarProvider
       style={
@@ -21,7 +21,7 @@ export default function Page() {
         } as React.CSSProperties
       }
     >
-      <AppSidebar />
+      <PreloadedSidebar />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 px-4">
           <SidebarTrigger className="-ml-1" />

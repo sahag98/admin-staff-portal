@@ -27,7 +27,7 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { useQuery } from "convex/react";
+import { Preloaded, usePreloadedQuery, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import Image from "next/image";
 import {
@@ -215,10 +215,14 @@ const data = {
   ],
 };
 
-export function AppSidebar() {
+export function AppSidebar({
+  preloadedUser,
+}: {
+  preloadedUser: Preloaded<typeof api.users.current>;
+}) {
   const pathname = usePathname();
 
-  const userInfo = useQuery(api.users.current);
+  const userInfo = usePreloadedQuery(preloadedUser);
 
   return (
     <Sidebar variant="floating">
@@ -353,10 +357,10 @@ export function AppSidebar() {
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild>
                     <Link
-                      href={"/budget"}
+                      href={"/all-budgets"}
                       className={cn(
                         "font-medium",
-                        pathname === "/budget"
+                        pathname === "/all-budgets"
                           ? "bg-sidebar-accent text-sidebar-accent-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
                           : "hover:bg-sidebar-accent transition-all"
                       )}

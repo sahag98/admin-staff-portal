@@ -401,6 +401,7 @@ export function PoForm({
         title: "PO Draft Updated 📃",
         description: "You can continue it later on.",
       });
+      router.push("/create");
     } else {
       await createPODraft({
         email: form.getValues().email,
@@ -668,7 +669,16 @@ export function PoForm({
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      value={
+                        templateInfo?.priority
+                          ? templateInfo.priority
+                          : field.value
+                      }
+                      defaultValue={
+                        templateInfo?.priority
+                          ? templateInfo.priority
+                          : field.value
+                      }
                       className="flex flex-col space-y-1"
                     >
                       <FormItem className="flex items-center space-x-3 space-y-0">
@@ -1116,18 +1126,29 @@ export function PoForm({
                   <FormControl>
                     <RadioGroup
                       onValueChange={field.onChange}
+                      value={
+                        templateInfo?.isBudgeted
+                          ? templateInfo.isBudgeted
+                          : field.value
+                      }
                       defaultValue={field.value}
                       className="flex flex-col space-y-1"
                     >
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value="Yes" />
+                          <RadioGroupItem
+                            disabled={templateInfo?.isBudgeted === "No"}
+                            value="Yes"
+                          />
                         </FormControl>
                         <FormLabel className="font-normal">Yes</FormLabel>
                       </FormItem>
                       <FormItem className="flex items-center space-x-3 space-y-0">
                         <FormControl>
-                          <RadioGroupItem value="No" />
+                          <RadioGroupItem
+                            disabled={templateInfo?.isBudgeted === "Yes"}
+                            value="No"
+                          />
                         </FormControl>
                         <FormLabel className="font-normal">No</FormLabel>
                       </FormItem>

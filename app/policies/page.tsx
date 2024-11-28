@@ -1,5 +1,5 @@
-import { AppSidebar } from "@/components/app-sidebar";
 import PoliciesList from "@/components/policies-list";
+import PreloadedSidebar from "@/components/preloaded-sidebar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -27,7 +27,7 @@ export default async function Page() {
         } as React.CSSProperties
       }
     >
-      <AppSidebar />
+      <PreloadedSidebar />
       <SidebarInset>
         <header className="flex h-16 w-full justify-between shrink-0 items-center gap-2 px-4">
           <div className="flex items-center">

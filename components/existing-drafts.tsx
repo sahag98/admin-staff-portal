@@ -18,16 +18,17 @@ const ExistingDrafts = ({
 }: {
   preloadedDrafts: Preloaded<typeof api.pos.getUserPODrafts>;
 }) => {
-  const currentUser = useQuery(api.users.current);
-  console.log("curr user: ", currentUser?._id);
   const drafts = usePreloadedQuery(preloadedDrafts);
   const deleteDraft = useMutation(api.pos.deleteDraft);
 
   if (!drafts) {
     return (
-      <div className="flex-1 flex flex-col gap-3">
-        <h2 className="text-xl font-semibold">Drafts (...)</h2>
-        <SkeletonLoader />
+      <div className="flex-1 flex flex-col gap-0">
+        <section className="flex items-center gap-1 ">
+          <NotepadTextDashed size={28} />
+          <h2 className="text-xl font-semibold flex items-center">Drafts</h2>
+        </section>
+        <SkeletonLoader icon={<NotepadTextDashed size={60} />} />
       </div>
     );
   }

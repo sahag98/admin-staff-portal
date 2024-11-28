@@ -470,6 +470,7 @@ export const updateDraft = mutation({
     template: v.optional(v.boolean()),
     template_name: v.optional(v.string()),
     email: v.optional(v.string()),
+
     event_name: v.optional(
       v.union(
         v.literal("Gala"),
@@ -497,11 +498,13 @@ export const updateDraft = mutation({
         v.literal("Not Related to Any Events")
       )
     ),
-    payment_term: v.union(
-      v.literal("Check in Advance"),
-      v.literal("Check on Delivery"),
-      v.literal("Ministry Credit Card"),
-      v.literal("Reimbursement")
+    payment_term: v.optional(
+      v.union(
+        v.literal("Check in Advance"),
+        v.literal("Check on Delivery"),
+        v.literal("Ministry Credit Card"),
+        v.literal("Reimbursement")
+      )
     ),
     expense_type: v.optional(
       v.union(
