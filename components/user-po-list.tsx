@@ -32,11 +32,12 @@ import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { sendUpdate } from "@/actions/send-update";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
+import { useUser } from "@clerk/nextjs";
 
 export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
   const yourPOs = useQuery(api.pos.getUserPosById, { user });
   const currentUser = useQuery(api.users.current);
-
+  const { user: currUser } = useUser();
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const router = useRouter();
@@ -79,11 +80,12 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
         status: "approved",
       });
       console.log("po email: ", po?.email);
-      if (po && currentUser) {
+      if (po && currentUser && currUser) {
         sendUpdate(
           po?.email,
           po.item_name,
           currentUser.name,
+          currUser?.emailAddresses[0]?.emailAddress,
           po.amount,
           "Approved"
         );
@@ -102,11 +104,12 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
         status: "denied",
       });
 
-      if (po && currentUser) {
+      if (po && currentUser && currUser) {
         sendUpdate(
           po.email,
           po.item_name,
           currentUser.name,
+          currUser?.emailAddresses[0]?.emailAddress,
           po.amount,
           "Denied"
         );
@@ -125,11 +128,12 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
         status: "voided",
       });
 
-      if (po && currentUser) {
+      if (po && currentUser && currUser) {
         sendUpdate(
           po.email,
           po.item_name,
           currentUser.name,
+          currUser?.emailAddresses[0]?.emailAddress,
           po.amount,
           "Voided"
         );

@@ -27,7 +27,9 @@ export const EmailTemplate = (
     email,
     amount,
     event_name,
+    payment_term,
     expense_type,
+    budget_num,
     items,
     message,
     ministry,
@@ -45,7 +47,7 @@ export const EmailTemplate = (
             <Heading className="text-black text-[28px] font-bold text-center p-0 my-[10px] mx-0">
               New Purchase Order
             </Heading>
-
+            <Text>Submitted By: {email}</Text>
             <Heading className="text-black text-[15px]">Item(s):</Heading>
             {/* <Section>
               <Row>
@@ -82,14 +84,24 @@ export const EmailTemplate = (
               ))}
             </Section>
             <Text className="text-black text-[15px] leading-[24px]">
+              Priority: {priority}
+            </Text>
+            <Text className="text-black text-[15px] leading-[24px]">
+              Payment term: {payment_term}
+            </Text>
+            <Text className="text-black text-[15px] leading-[24px]">
+              Budget number: {budget_num?.budget_num}
+            </Text>
+            <Text className="text-black text-[15px] leading-[24px]">
+              Description: {budget_num?.description}
+            </Text>
+            <Text className="text-black text-[15px] leading-[24px]">
               Amount: ${amount.toFixed(2)}
             </Text>
             <Text className="text-black text-[15px] leading-[24px]">
               Vendor: {vendor}
             </Text>
-            <Text className="text-black text-[15px] leading-[24px]">
-              Priority: {priority}
-            </Text>
+
             <Text className="text-black text-[15px] leading-[24px]">
               Required By: {required_by.toLocaleDateString()}
             </Text>
@@ -105,7 +117,7 @@ export const EmailTemplate = (
             <Text className="text-black text-[15px] leading-[24px]">
               Message: {message}
             </Text>
-            <Text>Submitted By: {email}</Text>
+
             <Hr className="border border-solid border-[#c0c0c0] my-[10px] mx-0 w-full" />
             <Section cellSpacing={3} className="w-full mt-4">
               <Link

@@ -26,12 +26,14 @@ import {
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
+import { useAuth, useUser } from "@clerk/nextjs";
 
 const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
   const { id } = params;
   const currentUser = useQuery(api.users.current);
+  const { isLoaded, isSignedIn, user } = useUser();
   const router = useRouter();
-
+  console.log(user?.emailAddresses[0].emailAddress);
   const searchParams = useSearchParams();
 
   const isAdmin = searchParams.get("admin");
@@ -52,11 +54,12 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
         status: "approved",
       });
 
-      if (po && currentUser) {
+      if (po && currentUser && user) {
         sendUpdate(
           po?.email,
           po.item_name,
           currentUser?.name,
+          user?.emailAddresses[0]?.emailAddress,
           po.amount,
           "Approved"
         );
@@ -75,11 +78,12 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
         status: "denied",
       });
 
-      if (po && currentUser) {
+      if (po && currentUser && user) {
         sendUpdate(
           po.email,
           po.item_name,
           currentUser?.name,
+          user?.emailAddresses[0]?.emailAddress,
           po.amount,
           "Denied"
         );
@@ -98,11 +102,12 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
         status: "voided",
       });
 
-      if (po && currentUser) {
+      if (po && currentUser && user) {
         sendUpdate(
           po.email,
           po.item_name,
           currentUser?.name,
+          user?.emailAddresses[0]?.emailAddress,
           po.amount,
           "Voided"
         );

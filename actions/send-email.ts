@@ -11,13 +11,12 @@ export async function sendEmail(
   const resend = new Resend(process.env.RESEND_API_KEY);
 
   const { data, error } = await resend.emails.send({
-    from: `Staff Portal <onboarding@resend.dev>`,
-    to: ["sahagking@gmail.com"],
-    cc: ["sahagking@gmail.com"],
+    from: `${values.email} <onboarding@resend.dev>`,
+    to: ["sarona.a@findnewlife.church"],
     subject: "New Purchase Order",
     react: EmailTemplate(values, po_id),
   });
 
-  console.log("data: ", data);
-  console.log("error: ", error);
+  console.log("send data: ", data);
+  console.log("send error: ", error);
 }

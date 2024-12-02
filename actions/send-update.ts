@@ -6,13 +6,14 @@ export async function sendUpdate(
   email: string,
   items: Array<Object>,
   approved_by: string,
+  approval_email: string,
   amount: number,
   status: string
 ) {
-  const resend = new Resend("re_gLWkB4j8_696ABZnRK56f1zEieEeZVUt2");
+  const resend = new Resend(process.env.RESEND_API_KEY);
 
   const { data, error } = await resend.emails.send({
-    from: "Staff <onboarding@resend.dev>",
+    from: `${approved_by} <${approval_email}>`,
     to: [email],
     subject: "PO Status",
     react: UpdateTemplate(email, items, approved_by, amount, status),
