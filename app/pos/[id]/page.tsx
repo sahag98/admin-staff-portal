@@ -26,12 +26,12 @@ import {
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
-import { useAuth, useUser } from "@clerk/nextjs";
+import { useUser } from "@clerk/nextjs";
 
 const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
   const { id } = params;
   const currentUser = useQuery(api.users.current);
-  const { isLoaded, isSignedIn, user } = useUser();
+  const { user } = useUser();
   const router = useRouter();
   console.log(user?.emailAddresses[0].emailAddress);
   const searchParams = useSearchParams();
