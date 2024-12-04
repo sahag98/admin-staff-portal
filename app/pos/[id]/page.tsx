@@ -402,7 +402,7 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
                 </div>
 
                 <div className="flex justify-end space-x-2">
-                  {isAdmin && po?.user === currentUser?._id && (
+                  {isAdmin && po?.user !== currentUser?._id && (
                     <>
                       {po?.po_status.status !== "voided" && (
                         <Button variant="outline" onClick={openVoidDialog}>
