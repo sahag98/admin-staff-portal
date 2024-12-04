@@ -33,6 +33,14 @@ import { api } from "@/convex/_generated/api";
 import { sendUpdate } from "@/actions/send-update";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { useUser } from "@clerk/nextjs";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "./ui/dialog";
+import { Textarea } from "./ui/textarea";
 
 export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
   const yourPOs = useQuery(api.pos.getUserPosById, { user });
@@ -41,7 +49,14 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const router = useRouter();
-
+  const [isDenying, setIsDenying] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [denyReason, setDenyReason] = useState("");
+  const [selectedOrderId, setSelectedOrderId] = useState<Id<"pos"> | null>(
+    null
+  );
+  const [isVoidDialogOpen, setIsVoidDialogOpen] = useState(false);
+  const [voidReason, setVoidReason] = useState("");
   const sortedOrders = yourPOs?.sort((a, b) => {
     if (sortColumn === null) return 0;
 
@@ -96,12 +111,26 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
     }
   };
 
-  const handleDeny = async (orderId: Id<"pos">) => {
+  const openDenyDialog = (orderId: Id<"pos">) => {
+    setSelectedOrderId(orderId);
+    setIsDialogOpen(true);
+  };
+
+  const handleDenySubmit = async () => {
+    if (selectedOrderId) {
+      await handleDeny(selectedOrderId, denyReason);
+      setIsDialogOpen(false);
+      setDenyReason("");
+    }
+  };
+
+  const handleDeny = async (orderId: Id<"pos">, reason: string) => {
     try {
       const po = await updateStatus({
         po_id: orderId,
         user_name: currentUser?.name,
         status: "denied",
+        reason, // Pass the reason to the API
       });
 
       if (po && currentUser && currUser) {
@@ -111,21 +140,35 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
           currentUser.name,
           currUser?.emailAddresses[0]?.emailAddress,
           po.amount,
-          "Denied"
+          "Denied",
+          reason // Include the reason in the update
         );
       }
     } catch (error) {
       console.error("Failed to deny PO:", error);
-      // You might want to add proper error handling/notification here
     }
   };
 
-  const handleVoid = async (orderId: Id<"pos">) => {
+  const openVoidDialog = (orderId: Id<"pos">) => {
+    setSelectedOrderId(orderId);
+    setIsVoidDialogOpen(true);
+  };
+
+  const handleVoidSubmit = async () => {
+    if (selectedOrderId) {
+      await handleVoid(selectedOrderId, voidReason);
+      setIsVoidDialogOpen(false);
+      setVoidReason("");
+    }
+  };
+
+  const handleVoid = async (orderId: Id<"pos">, reason: string) => {
     try {
       const po = await updateStatus({
         po_id: orderId,
         user_name: currentUser?.name,
         status: "voided",
+        reason, // Pass the reason to the API
       });
 
       if (po && currentUser && currUser) {
@@ -135,12 +178,12 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
           currentUser.name,
           currUser?.emailAddresses[0]?.emailAddress,
           po.amount,
-          "Voided"
+          "Voided",
+          reason // Include the reason in the update
         );
       }
     } catch (error) {
-      console.error("Failed to deny PO:", error);
-      // You might want to add proper error handling/notification here
+      console.error("Failed to void PO:", error);
     }
   };
 
@@ -227,7 +270,7 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
                             Approved
                           </Badge>
                         </TooltipTrigger>
-                        <TooltipContent className="bg-secondary">
+                        <TooltipContent className="bg-secondary border">
                           <p className="text-secondary-foreground font-medium">
                             by {order.po_status.by}
                           </p>
@@ -241,7 +284,7 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
                             Denied
                           </Badge>
                         </TooltipTrigger>
-                        <TooltipContent className="bg-secondary">
+                        <TooltipContent className="bg-secondary border">
                           <p className="text-secondary-foreground font-medium">
                             by {order.po_status.by}
                           </p>
@@ -260,7 +303,7 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
                             Voided
                           </Badge>
                         </TooltipTrigger>
-                        <TooltipContent className="bg-secondary">
+                        <TooltipContent className="bg-secondary border">
                           <p className="text-secondary-foreground font-medium">
                             by {order.po_status.by}
                           </p>
@@ -288,24 +331,30 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
                         {currentUser?._id !== order.user && (
                           <>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={() => handleApprove(order._id)}
-                              className="text-green-500"
-                            >
-                              Approve
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => handleDeny(order._id)}
-                              className="text-red-500"
-                            >
-                              Deny
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => handleVoid(order._id)}
-                              className=""
-                            >
-                              Void
-                            </DropdownMenuItem>
+                            {order.po_status.status !== "approved" && (
+                              <DropdownMenuItem
+                                onClick={() => handleApprove(order._id)}
+                                className="text-green-500"
+                              >
+                                Approve
+                              </DropdownMenuItem>
+                            )}
+                            {order.po_status.status !== "denied" && (
+                              <DropdownMenuItem
+                                onClick={() => openDenyDialog(order._id)}
+                                className="text-red-500"
+                              >
+                                Deny
+                              </DropdownMenuItem>
+                            )}
+                            {order.po_status.status !== "voided" && (
+                              <DropdownMenuItem
+                                onClick={() => openVoidDialog(order._id)}
+                                className=""
+                              >
+                                Void
+                              </DropdownMenuItem>
+                            )}
                           </>
                         )}
                       </DropdownMenuContent>
@@ -317,6 +366,42 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
           </Table>
         </div>
       </div>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Deny Purchase Order</DialogTitle>
+          </DialogHeader>
+          <Textarea
+            placeholder="Enter reason for denial"
+            value={denyReason}
+            onChange={(e) => setDenyReason(e.target.value)}
+          />
+          <DialogFooter>
+            <Button onClick={handleDenySubmit}>Submit</Button>
+            <Button variant="ghost" onClick={() => setIsDialogOpen(false)}>
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={isVoidDialogOpen} onOpenChange={setIsVoidDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Void Purchase Order</DialogTitle>
+          </DialogHeader>
+          <Textarea
+            placeholder="Enter reason for voiding"
+            value={voidReason}
+            onChange={(e) => setVoidReason(e.target.value)}
+          />
+          <DialogFooter>
+            <Button onClick={handleVoidSubmit}>Submit</Button>
+            <Button variant="ghost" onClick={() => setIsVoidDialogOpen(false)}>
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

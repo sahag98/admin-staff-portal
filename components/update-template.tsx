@@ -15,11 +15,11 @@ import {
 
 export const UpdateTemplate = (
   email: string,
-
   items: Array<any>,
   approved_by: string,
   amount: number,
-  status: string
+  status: string,
+  reason?: string
 ) => {
   // const {
   //   email,
@@ -46,7 +46,16 @@ export const UpdateTemplate = (
             <Heading className="text-black text-[28px] font-bold text-center p-0 my-[10px] mx-0">
               Your PO has been {status} by {approved_by}
             </Heading>
-
+            {reason & (status === "denied") && (
+              <Section className="border">
+                <Text className="text-red-500">{reason}</Text>
+              </Section>
+            )}
+            {reason & (status === "voided") && (
+              <Section className="border">
+                <Text className="text-black">{reason}</Text>
+              </Section>
+            )}
             <Text className="text-black text-[15px] leading-[24px]">
               Item(s):
             </Text>

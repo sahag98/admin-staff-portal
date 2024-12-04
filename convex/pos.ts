@@ -614,6 +614,7 @@ export const updatePOStatus = mutation({
     po_id: v.id("pos"),
     status: v.string(),
     user_name: v.optional(v.string()),
+    reason: v.optional(v.string()),
   },
   async handler(ctx, args) {
     const user = await GetUser(ctx);
@@ -627,6 +628,7 @@ export const updatePOStatus = mutation({
 
     await ctx.db.patch(args.po_id, {
       po_status: { by: args.user_name, status: args.status },
+      reason: args.reason,
     });
 
     const po = await ctx.db.get(args.po_id);

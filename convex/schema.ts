@@ -114,6 +114,7 @@ export default defineSchema({
         description: v.string(),
       })
     ),
+    reason: v.optional(v.string()),
     template: v.boolean(),
     template_name: v.string(),
     email: v.string(),

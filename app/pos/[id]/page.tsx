@@ -27,6 +27,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import { useUser } from "@clerk/nextjs";
+import { cn } from "@/lib/utils";
 
 const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
   const { id } = params;
@@ -169,8 +170,19 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
             </div>
 
             <Card>
-              <CardHeader>
+              <CardHeader className="flex flex-row justify-between items-start">
                 <h1 className="text-2xl font-bold">Purchase Order</h1>
+                {po?.reason && (
+                  <div
+                    className={cn(
+                      "max-w-1/2 border w-fit p-2 text-sm rounded-lg text-foreground",
+                      po.po_status.status === "voided" && "",
+                      po.po_status.status === "denied" && "border-red-400"
+                    )}
+                  >
+                    <h2>{po.reason}</h2>
+                  </div>
+                )}
               </CardHeader>
               <CardContent className="space-y-6">
                 <Table className="bg-secondary rounded-md">
