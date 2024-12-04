@@ -131,7 +131,11 @@ export default function PurchaseOrdersTable({
             </TableHeader>
             <TableBody>
               {currentItems?.map((order) => (
-                <TableRow key={order._id}>
+                <TableRow
+                  className="cursor-pointer"
+                  onClick={() => router.push(`/pos/${order._id}`)}
+                  key={order._id}
+                >
                   {/* <TableCell className="font-medium">{order._id}</TableCell> */}
                   <TableCell className="text-ellipsis">
                     <section className="flex items-center gap-2">

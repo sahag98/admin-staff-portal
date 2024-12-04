@@ -238,7 +238,11 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
             </TableHeader>
             <TableBody>
               {sortedOrders?.map((order) => (
-                <TableRow key={order._id}>
+                <TableRow
+                  className="cursor-pointer"
+                  onClick={() => router.push(`/pos/${order._id}?admin=true`)}
+                  key={order._id}
+                >
                   {/* <TableCell className="font-medium">{order._id}</TableCell> */}
                   <TableCell className="text-ellipsis">
                     <section className="flex items-center gap-2">
