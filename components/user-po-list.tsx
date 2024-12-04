@@ -49,7 +49,6 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const router = useRouter();
-  const [isDenying, setIsDenying] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [denyReason, setDenyReason] = useState("");
   const [selectedOrderId, setSelectedOrderId] = useState<Id<"pos"> | null>(
