@@ -127,7 +127,7 @@ export const getAllUsers = query({
     // If user is admin, return all users
     const allUsers = await ctx.db
       .query("users")
-      .filter((q) => q.neq(q.field("name"), "Sahak Arzoumanian"))
+      // .filter((q) => q.neq(q.field("name"), "Sahak Arzoumanian"))
       .collect();
 
     return allUsers;

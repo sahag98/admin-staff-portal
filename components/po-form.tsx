@@ -1452,9 +1452,7 @@ export function PoForm({
                       <span className="font-semibold">Click to upload</span> or
                       drag and drop
                     </p>
-                    <p className="text-xs text-muted-foreground">
-                      PDF, DOC, DOCX up to 10MB
-                    </p>
+                    <p className="text-xs text-muted-foreground">Up to 10MB</p>
                   </div>
                   <Input
                     id="file"
@@ -1467,7 +1465,7 @@ export function PoForm({
                     type="file"
                     multiple
                     className="hidden"
-                    accept=".pdf,.doc,.docx,.jpg"
+                    accept=".pdf,.doc,.docx,image/*,.xlsx"
                   />
                 </Label>
               </div>

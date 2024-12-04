@@ -325,9 +325,10 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
                       <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
                         <DropdownMenuItem
-                          onClick={() =>
-                            router.push(`/pos/${order._id}?admin=true`)
-                          }
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/pos/${order._id}?admin=true`);
+                          }}
                         >
                           View details
                         </DropdownMenuItem>
@@ -336,7 +337,10 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
                             <DropdownMenuSeparator />
                             {order.po_status.status !== "approved" && (
                               <DropdownMenuItem
-                                onClick={() => handleApprove(order._id)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleApprove(order._id);
+                                }}
                                 className="text-green-500"
                               >
                                 Approve
@@ -344,7 +348,10 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
                             )}
                             {order.po_status.status !== "denied" && (
                               <DropdownMenuItem
-                                onClick={() => openDenyDialog(order._id)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  openDenyDialog(order._id);
+                                }}
                                 className="text-red-500"
                               >
                                 Deny

@@ -25,16 +25,23 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 
 const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
   const { id } = params;
   const currentUser = useQuery(api.users.current);
   const { user } = useUser();
   const router = useRouter();
-  console.log(user?.emailAddresses[0].emailAddress);
   const searchParams = useSearchParams();
 
   const isAdmin = searchParams.get("admin");
@@ -46,6 +53,11 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
   const getFileUrl = useAction(api.files.getUrl);
 
   const updateStatus = useMutation(api.pos.updatePOStatus);
+
+  const [isDenyDialogOpen, setIsDenyDialogOpen] = useState(false);
+  const [denyReason, setDenyReason] = useState("");
+  const [isVoidDialogOpen, setIsVoidDialogOpen] = useState(false);
+  const [voidReason, setVoidReason] = useState("");
 
   const handleApprove = async () => {
     try {
@@ -67,16 +79,20 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
       }
     } catch (error) {
       console.error("Failed to approve PO:", error);
-      // You might want to add proper error handling/notification here
     }
   };
 
-  const handleDeny = async () => {
+  const openDenyDialog = () => {
+    setIsDenyDialogOpen(true);
+  };
+
+  const handleDenySubmit = async () => {
     try {
       const po = await updateStatus({
         po_id: id,
         user_name: currentUser?.name,
         status: "denied",
+        reason: denyReason,
       });
 
       if (po && currentUser && user) {
@@ -86,21 +102,28 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
           currentUser?.name,
           user?.emailAddresses[0]?.emailAddress,
           po.amount,
-          "Denied"
+          "Denied",
+          denyReason
         );
       }
+      setIsDenyDialogOpen(false);
+      setDenyReason("");
     } catch (error) {
       console.error("Failed to deny PO:", error);
-      // You might want to add proper error handling/notification here
     }
   };
 
-  const handleVoid = async () => {
+  const openVoidDialog = () => {
+    setIsVoidDialogOpen(true);
+  };
+
+  const handleVoidSubmit = async () => {
     try {
       const po = await updateStatus({
         po_id: id,
         user_name: currentUser?.name,
         status: "voided",
+        reason: voidReason,
       });
 
       if (po && currentUser && user) {
@@ -110,12 +133,14 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
           currentUser?.name,
           user?.emailAddresses[0]?.emailAddress,
           po.amount,
-          "Voided"
+          "Voided",
+          voidReason
         );
       }
+      setIsVoidDialogOpen(false);
+      setVoidReason("");
     } catch (error) {
       console.error("Failed to void PO:", error);
-      // You might want to add proper error handling/notification here
     }
   };
 
@@ -145,28 +170,29 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
                   {"Back to Purchase Orders"}
                 </Link>
               )}
-
-              <Badge
-                variant={
-                  po?.po_status.status === "approved"
-                    ? "default"
+              {po?.po_status.status && (
+                <Badge
+                  variant={
+                    po?.po_status.status === "approved"
+                      ? "default"
+                      : po?.po_status.status === "denied"
+                        ? "destructive"
+                        : po?.po_status.status === "voided"
+                          ? "outline"
+                          : "secondary"
+                  }
+                  className="h-6"
+                >
+                  <CheckCircle2 className="mr-1 h-3 w-3" />
+                  {po?.po_status.status === "approved"
+                    ? `Approved by ${po.po_status.by}`
                     : po?.po_status.status === "denied"
-                      ? "destructive"
+                      ? `Denied by ${po.po_status.by}`
                       : po?.po_status.status === "voided"
-                        ? "outline"
-                        : "secondary"
-                }
-                className="h-6"
-              >
-                <CheckCircle2 className="mr-1 h-3 w-3" />
-                {po?.po_status.status === "approved"
-                  ? `Approved by ${po.po_status.by}`
-                  : po?.po_status.status === "denied"
-                    ? `Denied by ${po.po_status.by}`
-                    : po?.po_status.status === "voided"
-                      ? `Voided by ${po.po_status.by}`
-                      : "Pending"}
-              </Badge>
+                        ? `Voided by ${po.po_status.by}`
+                        : "Pending"}
+                </Badge>
+              )}
             </div>
 
             <Card>
@@ -376,15 +402,15 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
                 </div>
 
                 <div className="flex justify-end space-x-2">
-                  {isAdmin && po?.user !== currentUser?._id && (
+                  {isAdmin && po?.user === currentUser?._id && (
                     <>
                       {po?.po_status.status !== "voided" && (
-                        <Button variant="outline" onClick={handleVoid}>
+                        <Button variant="outline" onClick={openVoidDialog}>
                           Void
                         </Button>
                       )}
                       {po?.po_status.status !== "denied" && (
-                        <Button variant="destructive" onClick={handleDeny}>
+                        <Button variant="destructive" onClick={openDenyDialog}>
                           Deny
                         </Button>
                       )}
@@ -401,6 +427,42 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
           </div>
         </div>
       </SidebarInset>
+      <Dialog open={isDenyDialogOpen} onOpenChange={setIsDenyDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Deny Purchase Order</DialogTitle>
+          </DialogHeader>
+          <Textarea
+            placeholder="Enter reason for denial"
+            value={denyReason}
+            onChange={(e) => setDenyReason(e.target.value)}
+          />
+          <DialogFooter>
+            <Button onClick={handleDenySubmit}>Submit</Button>
+            <Button variant="ghost" onClick={() => setIsDenyDialogOpen(false)}>
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={isVoidDialogOpen} onOpenChange={setIsVoidDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Void Purchase Order</DialogTitle>
+          </DialogHeader>
+          <Textarea
+            placeholder="Enter reason for voiding"
+            value={voidReason}
+            onChange={(e) => setVoidReason(e.target.value)}
+          />
+          <DialogFooter>
+            <Button onClick={handleVoidSubmit}>Submit</Button>
+            <Button variant="ghost" onClick={() => setIsVoidDialogOpen(false)}>
+              Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </SidebarProvider>
   );
 };
