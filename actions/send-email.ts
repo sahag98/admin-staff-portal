@@ -11,8 +11,8 @@ export async function sendEmail(
   const resend = new Resend(process.env.RESEND_API_KEY);
 
   const { data, error } = await resend.emails.send({
-    from: `${values.email} <onboarding@resend.dev>`,
-    to: ["sarona.a@findnewlife.church"],
+    from: `${values.email} <${values.email}>`,
+    to: ["sarona.a@findnewlife.church", "peter@findnewlife.church"],
     subject: "New Purchase Order",
     react: EmailTemplate(values, po_id),
   });
