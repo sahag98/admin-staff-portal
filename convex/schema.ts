@@ -108,6 +108,7 @@ export default defineSchema({
   }),
   pos: defineTable({
     amount: v.number(),
+    is_reconciled: v.optional(v.boolean()),
     budget_num: v.optional(
       v.object({
         budget_num: v.number(),

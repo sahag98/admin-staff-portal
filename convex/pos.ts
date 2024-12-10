@@ -121,6 +121,7 @@ export const createPO = mutation({
       const po = await ctx.db.insert("pos", {
         amount,
         budget_num,
+        is_reconciled: false,
         template,
         template_name,
         email,
@@ -606,6 +607,42 @@ export const updateDraft = mutation({
     const po = await ctx.db.get(args.draft_id);
 
     return po;
+  },
+});
+
+export const updatePOReconcile = mutation({
+  args: {
+    po_id: v.id("pos"),
+    // status: v.string(),
+    // user_name: v.optional(v.string()),
+    // reason: v.optional(v.string()),
+  },
+  async handler(ctx, args) {
+    const user = await GetUser(ctx);
+
+    // Check if user is admin
+    if (user?.role !== "admin") {
+      throw new Error(
+        "Unauthorized: Only admins can approve/deny purchase orders"
+      );
+    }
+
+    const po = await ctx.db.get(args.po_id);
+    if (!po) {
+      throw new Error("Purchase order not found");
+    }
+
+    console.log("po: ", po.is_reconciled);
+
+    const updatedIsReconciled = !po.is_reconciled;
+
+    console.log("updated reconcile: ", updatedIsReconciled);
+
+    await ctx.db.patch(args.po_id, { is_reconciled: updatedIsReconciled });
+
+    // const po = await ctx.db.get(args.po_id);
+
+    // return po;
   },
 });
 

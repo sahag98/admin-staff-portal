@@ -14,6 +14,7 @@ http.route({
     if (!event) {
       return new Response("Error occured", { status: 400 });
     }
+
     switch (event.type) {
       case "user.created": // intentional fallthrough
       case "user.updated":
@@ -24,7 +25,9 @@ http.route({
 
       case "user.deleted": {
         const clerkUserId = event.data.id!;
-        await ctx.runMutation(internal.users.deleteFromClerk, { clerkUserId });
+        await ctx.runMutation(internal.users.deleteFromClerk, {
+          clerkUserId,
+        });
         break;
       }
       default:

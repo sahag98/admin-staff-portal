@@ -25,7 +25,9 @@ import {
   ArrowUpDown,
   WalletCards,
   X,
+  Check,
 } from "lucide-react";
+import * as XLSX from "xlsx";
 import { Id } from "@/convex/_generated/dataModel";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation } from "convex/react";
@@ -45,11 +47,13 @@ import { Textarea } from "./ui/textarea";
 export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
   const yourPOs = useQuery(api.pos.getUserPosById, { user });
   const currentUser = useQuery(api.users.current);
+  const POUser = useQuery(api.users.getUserById, { userId: user });
   const { user: currUser } = useUser();
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const updateReconcile = useMutation(api.pos.updatePOReconcile);
   const [denyReason, setDenyReason] = useState("");
   const [selectedOrderId, setSelectedOrderId] = useState<Id<"pos"> | null>(
     null
@@ -79,6 +83,19 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
 
   const updateStatus = useMutation(api.pos.updatePOStatus);
   // const getCurrentPO = useQuery(api.pos.getPo);
+
+  const exportToExcel = (fileName = "table2024.xlsx") => {
+    console.log("EXPORTING TO EXCEL");
+    // Convert the data to a worksheet
+    const worksheet = XLSX.utils.json_to_sheet(yourPOs!);
+
+    // Create a new workbook and append the worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+    // Write the file
+    XLSX.writeFile(workbook, fileName);
+  };
 
   const handleApprove = async (orderId: Id<"pos">) => {
     try {
@@ -197,7 +214,17 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
 
   return (
     <div className="w-full">
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto  flex flex-col">
+        <Button
+          onClick={() =>
+            exportToExcel(
+              `${POUser?.name}-POS-${new Date().getFullYear()}.xlsx`
+            )
+          }
+          className="ml-auto mb-4"
+        >
+          Export to Excel
+        </Button>
         <div className="rounded-md border min-w-[640px]">
           <Table>
             <TableHeader>
@@ -213,6 +240,9 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
                     Item(s)
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                   </Button>
+                </TableHead>
+                <TableHead>
+                  <Button variant="ghost">R</Button>
                 </TableHead>
                 <TableHead>
                   <Button variant="ghost" onClick={() => handleSort("amount")}>
@@ -256,6 +286,20 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
                       ))}
                       {order.item_name.length > 3 && <p>And more...</p>}
                     </section>
+                  </TableCell>
+                  <TableCell
+                    className=""
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log("trying to reconcile");
+                      updateReconcile({ po_id: order._id });
+                    }}
+                  >
+                    <div className="size-5 flex items-center justify-center rounded-md border-2">
+                      {order.is_reconciled && (
+                        <Check color={order.is_reconciled ? "green" : "red"} />
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>${order.amount.toFixed(2)}</TableCell>
                   <TableCell>
