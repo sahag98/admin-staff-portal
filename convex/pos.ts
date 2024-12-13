@@ -447,6 +447,7 @@ export const getUserPosById = query({
     const userPos = await ctx.db
       .query("pos")
       .filter((q) => q.eq(q.field("user"), args.user))
+      .order("desc")
       .collect();
 
     return userPos;

@@ -43,6 +43,14 @@ import {
   DialogFooter,
 } from "./ui/dialog";
 import { Textarea } from "./ui/textarea";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "./ui/pagination";
 
 export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
   const yourPOs = useQuery(api.pos.getUserPosById, { user });
@@ -50,6 +58,8 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
   const POUser = useQuery(api.users.getUserById, { userId: user });
   const { user: currUser } = useUser();
   const [sortColumn, setSortColumn] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
   const router = useRouter();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -60,6 +70,7 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
   );
   const [isVoidDialogOpen, setIsVoidDialogOpen] = useState(false);
   const [voidReason, setVoidReason] = useState("");
+
   const sortedOrders = yourPOs?.sort((a, b) => {
     if (sortColumn === null) return 0;
 
@@ -79,6 +90,15 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
       setSortColumn(column);
       setSortDirection("asc");
     }
+  };
+
+  const totalPages = Math.ceil((sortedOrders?.length || 0) / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentItems = sortedOrders?.slice(startIndex, endIndex);
+
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
   };
 
   const updateStatus = useMutation(api.pos.updatePOStatus);
@@ -235,33 +255,37 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                   </Button>
                 </TableHead> */}
+                <TableHead className="px-2 text-right">
+                  <Button variant="ghost">PO #</Button>
+                </TableHead>
+                <TableHead className="px-2 text-start">
+                  <Button variant="ghost" onClick={() => handleSort("vendor")}>
+                    Vendor(s)
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </TableHead>
                 <TableHead>
                   <Button variant="ghost" onClick={() => handleSort("item")}>
                     Item(s)
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                   </Button>
                 </TableHead>
-                <TableHead>
+                <TableHead className="px-2 text-right">
                   <Button variant="ghost" onClick={() => handleSort("item")}>
                     Budget #
                   </Button>
                 </TableHead>
-                <TableHead>
+                <TableHead className="px-2 text-right">
                   <Button variant="ghost">R</Button>
                 </TableHead>
-                <TableHead>
+                <TableHead className="px-2 text-right">
                   <Button variant="ghost" onClick={() => handleSort("amount")}>
-                    Amount
+                    Total
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                   </Button>
                 </TableHead>
-                <TableHead>
-                  <Button variant="ghost" onClick={() => handleSort("date")}>
-                    Created At
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </TableHead>
-                <TableHead>
+
+                <TableHead className="px-2 text-right">
                   <Button variant="ghost" onClick={() => handleSort("date")}>
                     Required By
                     <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -272,31 +296,41 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {sortedOrders?.map((order) => (
+              {currentItems?.map((order) => (
                 <TableRow
                   className="cursor-pointer"
                   onClick={() => router.push(`/pos/${order._id}?admin=true`)}
                   key={order._id}
                 >
-                  {/* <TableCell className="font-medium">{order._id}</TableCell> */}
-                  <TableCell className="text-ellipsis">
-                    <section className="flex items-center gap-2">
-                      {order.item_name.slice(0, 3).map((item, index) => (
+                  <TableCell className=" px-2 text-center w-10">
+                    {order.po_number || "N/A"}
+                  </TableCell>
+                  <TableCell className="px-2 flex-1 max-w-2/5 w-1/3">
+                    {order.vendor}
+                  </TableCell>
+                  <TableCell className="text-ellipsis w-1/3 max-w-1/3 flex-1">
+                    <section className="flex flex-wrap items-center gap-2">
+                      {order.item_name.map((item, index) => (
                         <section
-                          className="flex bg-secondary rounded-full px-2 py-1 items-center"
+                          className="flex bg-secondary rounded-md px-2 py-1 items-center"
                           key={index}
                         >
-                          <p>{item.name}</p>
+                          <div className="flex items-center gap-1">
+                            <p>{item.name}</p>
+                            <span>x</span>
+                            <p>{item.quantity}</p>
+                          </div>
                         </section>
                       ))}
-                      {order.item_name.length > 3 && <p>And more...</p>}
+                      {/* {order.item_name.length > 3 && <p>And more...</p>} */}
                     </section>
                   </TableCell>
-                  <TableCell className="text-ellipsis">
+                  <TableCell className="px-2 text-center w-10">
                     {order.budget_num?.budget_num || "N/A"}
                   </TableCell>
+
                   <TableCell
-                    className=""
+                    className="px-5 text-center"
                     onClick={(e) => {
                       e.stopPropagation();
                       console.log("trying to reconcile");
@@ -309,10 +343,10 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
                       )}
                     </div>
                   </TableCell>
-                  <TableCell>${order.amount.toFixed(2)}</TableCell>
-                  <TableCell>
-                    {new Date(order._creationTime).toLocaleDateString()}
+                  <TableCell className="px-2 text-center w-16">
+                    ${order.amount.toFixed(2)}
                   </TableCell>
+
                   <TableCell>
                     {new Date(order.required_by).toLocaleDateString()}
                   </TableCell>
@@ -464,6 +498,48 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {yourPOs && yourPOs?.length > 10 && (
+        <div className="mt-4 flex">
+          <Pagination className="self-end justify-end">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  className={
+                    currentPage === 1
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      onClick={() => handlePageChange(page)}
+                      isActive={currentPage === page}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                )
+              )}
+
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  className={
+                    currentPage === totalPages
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 }
