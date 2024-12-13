@@ -242,6 +242,11 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
                   </Button>
                 </TableHead>
                 <TableHead>
+                  <Button variant="ghost" onClick={() => handleSort("item")}>
+                    Budget #
+                  </Button>
+                </TableHead>
+                <TableHead>
                   <Button variant="ghost">R</Button>
                 </TableHead>
                 <TableHead>
@@ -286,6 +291,9 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
                       ))}
                       {order.item_name.length > 3 && <p>And more...</p>}
                     </section>
+                  </TableCell>
+                  <TableCell className="text-ellipsis">
+                    {order.budget_num?.budget_num || "N/A"}
                   </TableCell>
                   <TableCell
                     className=""

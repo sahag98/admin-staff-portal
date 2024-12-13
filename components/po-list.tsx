@@ -108,6 +108,9 @@ export default function PurchaseOrdersTable({
                   </Button>
                 </TableHead>
                 <TableHead>
+                  <Button variant="ghost">Budget #</Button>
+                </TableHead>
+                <TableHead>
                   <Button variant="ghost" onClick={() => handleSort("amount")}>
                     Amount
                     <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -149,6 +152,9 @@ export default function PurchaseOrdersTable({
                       ))}
                       {order.item_name.length > 3 && <p>And more...</p>}
                     </section>
+                  </TableCell>
+                  <TableCell className="text-ellipsis">
+                    {order.budget_num?.budget_num || "N/A"}
                   </TableCell>
                   <TableCell>${order.amount.toFixed(2)}</TableCell>
                   <TableCell>
