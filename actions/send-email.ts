@@ -35,7 +35,7 @@ export async function sendEmailToUsers(
     from: `Sarona <sarona.a@findnewlife.church>`,
     to: [values.email],
     subject: "New Purchase Order Confirmation",
-    react: EmailUserTemplate(values, po_id, po_number),
+    react: EmailUserTemplate(values, po_number),
   });
 
   console.log("send data: ", data);

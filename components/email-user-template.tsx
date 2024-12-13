@@ -15,15 +15,12 @@ import {
   Row,
   Column,
 } from "@react-email/components";
-import { Id } from "@/convex/_generated/dataModel";
 
 export const EmailUserTemplate = (
   values: z.infer<typeof formSchema>,
-  poId: Id<"pos">,
   po_number: number
 ) => {
   const {
-    email,
     amount,
     event_name,
     payment_term,
