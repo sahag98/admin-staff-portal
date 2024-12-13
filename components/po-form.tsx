@@ -51,7 +51,7 @@ import { cn } from "@/lib/utils";
 import { Label } from "./ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "./ui/textarea";
-import { sendEmail } from "@/actions/send-email";
+import { sendEmailToAdmins, sendEmailToUsers } from "@/actions/send-email";
 import Alert from "./Alert"; // Import the Alert component
 import {
   Table,
@@ -76,7 +76,10 @@ export const formSchema = z
     template: z.boolean().default(false),
     template_name: z.string(),
     priority: z.enum(["High", "Medium", "Low"]),
-    vendor: z.string({ required_error: "A vendor is required" }).min(2).max(50),
+    vendor: z
+      .string({ required_error: "A vendor is required" })
+      .min(2)
+      .max(100),
     expense_type: z.enum(["General", "Building", "Missions"]),
     payment_term: z.enum([
       "Check in Advance",
@@ -542,7 +545,7 @@ export function PoForm({
       router.push("/create");
     }
 
-    const poId = await addPO({
+    const { poId, po_number } = await addPO({
       email: values.email,
       amount: totalAmount,
       template: values.template,
@@ -575,7 +578,8 @@ export function PoForm({
     form.resetField("message");
     setFiles([]);
     setIsFormSubmitting(false);
-    sendEmail(values, poId);
+    sendEmailToAdmins(values, poId, po_number);
+    sendEmailToUsers(values, poId, po_number);
   }
 
   const closeAlert = () => setAlertMessage(null);

@@ -100,29 +100,33 @@ export default function PurchaseOrdersTable({
         <div className="rounded-md border min-w-[640px]">
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="">
+                <TableHead className="px-2 text-right">
+                  <Button variant="ghost">PO #</Button>
+                </TableHead>
+                <TableHead className="px-2 text-start">
+                  <Button variant="ghost" onClick={() => handleSort("vendor")}>
+                    Vendor(s)
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </TableHead>
                 <TableHead>
                   <Button variant="ghost" onClick={() => handleSort("item")}>
                     Item(s)
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                   </Button>
                 </TableHead>
-                <TableHead>
+                <TableHead className="px-2 text-right">
                   <Button variant="ghost">Budget #</Button>
                 </TableHead>
-                <TableHead>
+                <TableHead className="px-2 text-right">
                   <Button variant="ghost" onClick={() => handleSort("amount")}>
-                    Amount
+                    Total
                     <ArrowUpDown className="ml-2 h-4 w-4" />
                   </Button>
                 </TableHead>
-                <TableHead>
-                  <Button variant="ghost" onClick={() => handleSort("date")}>
-                    Created At
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                  </Button>
-                </TableHead>
-                <TableHead>
+
+                <TableHead className="px-2 text-right">
                   <Button variant="ghost" onClick={() => handleSort("date")}>
                     Required By
                     <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -140,27 +144,37 @@ export default function PurchaseOrdersTable({
                   key={order._id}
                 >
                   {/* <TableCell className="font-medium">{order._id}</TableCell> */}
-                  <TableCell className="text-ellipsis">
-                    <section className="flex items-center gap-2">
-                      {order.item_name.slice(0, 3).map((item, index) => (
+                  <TableCell className=" px-2 text-center w-10">
+                    {order.po_number || "N/A"}
+                  </TableCell>
+                  <TableCell className="px-2 flex-1 max-w-2/5 w-1/3">
+                    {order.vendor}
+                  </TableCell>
+                  <TableCell className="text-ellipsis w-1/3 max-w-1/3 flex-1">
+                    <section className="flex flex-wrap items-center gap-2">
+                      {order.item_name.map((item, index) => (
                         <section
-                          className="flex bg-secondary rounded-full px-2 py-1 items-center"
+                          className="flex bg-secondary rounded-md px-2 py-1 items-center"
                           key={index}
                         >
-                          <p>{item.name}</p>
+                          <div className="flex items-center gap-1">
+                            <p>{item.name}</p>
+                            <span>x</span>
+                            <p>{item.quantity}</p>
+                          </div>
                         </section>
                       ))}
-                      {order.item_name.length > 3 && <p>And more...</p>}
+                      {/* {order.item_name.length > 3 && <p>And more...</p>} */}
                     </section>
                   </TableCell>
-                  <TableCell className="text-ellipsis">
+                  <TableCell className="px-2 text-center w-10">
                     {order.budget_num?.budget_num || "N/A"}
                   </TableCell>
-                  <TableCell>${order.amount.toFixed(2)}</TableCell>
-                  <TableCell>
-                    {new Date(order._creationTime).toLocaleDateString()}
+                  <TableCell className="px-2 text-center w-16">
+                    ${order.amount.toFixed(2)}
                   </TableCell>
-                  <TableCell>
+
+                  <TableCell className="px-2 text-center w-16">
                     {new Date(order.required_by).toLocaleDateString()}
                   </TableCell>
                   <TableCell>

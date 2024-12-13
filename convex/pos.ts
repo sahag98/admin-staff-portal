@@ -118,7 +118,24 @@ export const createPO = mutation({
         fileNames,
       } = args;
 
+      let counter;
+
+      let updatedCounter;
+      const existingCounter = await ctx.db
+        .query("po_counter")
+        .filter((q) => q.eq(q.field("name"), "po_number"))
+        .first();
+      if (!existingCounter) {
+        await ctx.db.insert("po_counter", { name: "po_number", value: 1 });
+        counter = 1;
+      } else {
+        updatedCounter = existingCounter?.value + 1;
+        counter = updatedCounter;
+        await ctx.db.patch(existingCounter?._id!, { value: updatedCounter });
+      }
+
       const po = await ctx.db.insert("pos", {
+        po_number: counter,
         amount,
         budget_num,
         is_reconciled: false,
@@ -142,7 +159,7 @@ export const createPO = mutation({
         fileNames: fileNames || [],
       });
 
-      return po;
+      return { poId: po, po_number: counter };
     }
   },
 });

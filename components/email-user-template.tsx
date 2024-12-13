@@ -19,7 +19,7 @@ import {
 } from "@react-email/components";
 import { Id } from "@/convex/_generated/dataModel";
 
-export const EmailTemplate = (
+export const EmailUserTemplate = (
   values: z.infer<typeof formSchema>,
   poId: Id<"pos">,
   po_number: number
@@ -41,38 +41,18 @@ export const EmailTemplate = (
   return (
     <Html>
       <Head />
-      <Preview>New Purchase Order</Preview>
+      <Preview>New Purchase Order Confirmation</Preview>
       <Tailwind>
         <Body className="bg-white my-auto mx-auto font-sans px-2">
           <Container className="border border-solid border-[#eaeaea] bg-[#FAFAFA] rounded my-[40px] mx-auto p-[20px] max-w-[465px]">
             <Heading className="text-black text-[28px] font-bold text-center p-0 my-[10px] mx-0">
               New Purchase Order #{po_number}
             </Heading>
-            <Text>Submitted By: {email}</Text>
+            <Text className="text-black text-[15px]">
+              Your PO has been submitted successfuly and is pending for
+              aproval/denial.
+            </Text>
             <Heading className="text-black text-[15px]">Item(s):</Heading>
-            {/* <Section>
-              <Row>
-                <Column>
-                  <Text>Hey</Text>
-                  <Text>there</Text>
-                  <Text>man</Text>
-                </Column>
-              </Row>
-              <Row>
-                <Column>
-                  <Text>Hey</Text>
-                  <Text>there</Text>
-                  <Text>man</Text>
-                </Column>
-              </Row>
-              <Row>
-                <Column>
-                  <Text>Hey</Text>
-                  <Text>there</Text>
-                  <Text>man</Text>
-                </Column>
-              </Row>
-            </Section> */}
             <Section>
               {items.map((item, idx) => (
                 <Row className="flex items-center gap-2" key={idx}>
@@ -118,16 +98,6 @@ export const EmailTemplate = (
             <Text className="text-black text-[15px] leading-[24px]">
               Message: {message}
             </Text>
-
-            <Hr className="border border-solid border-[#c0c0c0] my-[10px] mx-0 w-full" />
-            <Section cellSpacing={3} className="w-full mt-4">
-              <Link
-                className="bg-gray-900 p-3 text-white w-full rounded-md"
-                href={`https://new-life-po.vercel.app/pos/${poId}?admin=true`}
-              >
-                View
-              </Link>
-            </Section>
           </Container>
         </Body>
       </Tailwind>

@@ -106,7 +106,12 @@ export default defineSchema({
     fileIds: v.optional(v.array(v.string())),
     fileNames: v.optional(v.array(v.string())),
   }),
+  po_counter: defineTable({
+    name: v.string(),
+    value: v.number(),
+  }),
   pos: defineTable({
+    po_number: v.optional(v.number()),
     amount: v.number(),
     is_reconciled: v.optional(v.boolean()),
     budget_num: v.optional(
