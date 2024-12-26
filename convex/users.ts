@@ -17,9 +17,6 @@ export const current = query({
 export const upsertFromClerk = internalMutation({
   args: { data: v.any() as Validator<UserJSON> }, // no runtime validation, trust Clerk
   async handler(ctx, { data }) {
-    if (!data.email_addresses[0].email_address.includes("findnewlife.church")) {
-      throw new Error("UPSERT: You are not authorized to use this website.");
-    }
     const userAttributes = {
       name: `${data.first_name} ${data.last_name}`,
       budget: 500,

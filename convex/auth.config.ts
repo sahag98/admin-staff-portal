@@ -1,8 +1,8 @@
 export default {
   providers: [
     {
-      domain: "https://primary-lab-98.clerk.accounts.dev",
-      applicationID: "convex",
+      domain: "https://concise-polliwog-3.clerk.accounts.dev",
+      applicationID: "admin-portal",
     },
   ],
 };

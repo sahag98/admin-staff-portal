@@ -68,14 +68,14 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
       });
 
       if (po && currentUser && user) {
-        sendUpdate(
-          po?.email,
-          po.item_name,
-          currentUser?.name,
-          user?.emailAddresses[0]?.emailAddress,
-          po.amount,
-          "Approved"
-        );
+        // sendUpdate(
+        //   po?.email,
+        //   po.item_name,
+        //   currentUser?.name,
+        //   user?.emailAddresses[0]?.emailAddress,
+        //   po.amount,
+        //   "Approved"
+        // );
       }
     } catch (error) {
       console.error("Failed to approve PO:", error);
@@ -96,15 +96,15 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
       });
 
       if (po && currentUser && user) {
-        sendUpdate(
-          po.email,
-          po.item_name,
-          currentUser?.name,
-          user?.emailAddresses[0]?.emailAddress,
-          po.amount,
-          "Denied",
-          denyReason
-        );
+        // sendUpdate(
+        //   po.email,
+        //   po.item_name,
+        //   currentUser?.name,
+        //   user?.emailAddresses[0]?.emailAddress,
+        //   po.amount,
+        //   "Denied",
+        //   denyReason
+        // );
       }
       setIsDenyDialogOpen(false);
       setDenyReason("");
@@ -127,15 +127,15 @@ const PoIndividualPage = ({ params }: { params: { id: Id<"pos"> } }) => {
       });
 
       if (po && currentUser && user) {
-        sendUpdate(
-          po.email,
-          po.item_name,
-          currentUser?.name,
-          user?.emailAddresses[0]?.emailAddress,
-          po.amount,
-          "Voided",
-          voidReason
-        );
+        // sendUpdate(
+        //   po.email,
+        //   po.item_name,
+        //   currentUser?.name,
+        //   user?.emailAddresses[0]?.emailAddress,
+        //   po.amount,
+        //   "Voided",
+        //   voidReason
+        // );
       }
       setIsVoidDialogOpen(false);
       setVoidReason("");

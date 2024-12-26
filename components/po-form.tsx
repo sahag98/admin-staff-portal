@@ -578,8 +578,8 @@ export function PoForm({
     form.resetField("message");
     setFiles([]);
     setIsFormSubmitting(false);
-    sendEmailToAdmins(values, poId, po_number);
-    sendEmailToUsers(values, poId, po_number);
+    // sendEmailToAdmins(values, poId, po_number);
+    // sendEmailToUsers(values, poId, po_number);
   }
 
   const closeAlert = () => setAlertMessage(null);

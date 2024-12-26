@@ -140,14 +140,14 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
       });
       console.log("po email: ", po?.email);
       if (po && currentUser && currUser) {
-        sendUpdate(
-          po?.email,
-          po.item_name,
-          currentUser.name,
-          currUser?.emailAddresses[0]?.emailAddress,
-          po.amount,
-          "Approved"
-        );
+        // sendUpdate(
+        //   po?.email,
+        //   po.item_name,
+        //   currentUser.name,
+        //   currUser?.emailAddresses[0]?.emailAddress,
+        //   po.amount,
+        //   "Approved"
+        // );
       }
     } catch (error) {
       console.error("Failed to approve PO:", error);
@@ -178,15 +178,15 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
       });
 
       if (po && currentUser && currUser) {
-        sendUpdate(
-          po.email,
-          po.item_name,
-          currentUser.name,
-          currUser?.emailAddresses[0]?.emailAddress,
-          po.amount,
-          "Denied",
-          reason // Include the reason in the update
-        );
+        // sendUpdate(
+        //   po.email,
+        //   po.item_name,
+        //   currentUser.name,
+        //   currUser?.emailAddresses[0]?.emailAddress,
+        //   po.amount,
+        //   "Denied",
+        //   reason // Include the reason in the update
+        // );
       }
     } catch (error) {
       console.error("Failed to deny PO:", error);
@@ -216,15 +216,15 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
       });
 
       if (po && currentUser && currUser) {
-        sendUpdate(
-          po.email,
-          po.item_name,
-          currentUser.name,
-          currUser?.emailAddresses[0]?.emailAddress,
-          po.amount,
-          "Voided",
-          reason // Include the reason in the update
-        );
+        // sendUpdate(
+        //   po.email,
+        //   po.item_name,
+        //   currentUser.name,
+        //   currUser?.emailAddresses[0]?.emailAddress,
+        //   po.amount,
+        //   "Voided",
+        //   reason // Include the reason in the update
+        // );
       }
     } catch (error) {
       console.error("Failed to void PO:", error);
