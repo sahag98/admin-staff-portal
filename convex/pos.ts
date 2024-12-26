@@ -346,6 +346,8 @@ export const getUserPODrafts = query({
     if (!user) {
       return;
     }
+
+    console.log("user: ", user);
     const userPoDrafts = await ctx.db
       .query("po_drafts")
       .filter((q) => q.eq(q.field("user"), user._id))

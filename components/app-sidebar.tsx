@@ -231,7 +231,7 @@ export function AppSidebar({
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <a href="#">
-                <div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                {/* <div className="flex aspect-square size-10 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <Image
                     src={"/icon.png"}
                     className="rounded"
@@ -239,9 +239,9 @@ export function AppSidebar({
                     width={500}
                     height={500}
                   />
-                </div>
+                </div> */}
                 <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-semibold">New Life Staff Portal</span>
+                  <span className="font-semibold">Admin Staff Portal</span>
                   <span className="">v1.0.0</span>
                 </div>
               </a>
