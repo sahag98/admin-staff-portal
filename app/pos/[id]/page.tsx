@@ -1,5 +1,4 @@
 "use client";
-import { sendUpdate } from "@/actions/send-update";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,

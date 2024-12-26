@@ -32,7 +32,6 @@ import { Id } from "@/convex/_generated/dataModel";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { sendUpdate } from "@/actions/send-update";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
 import { useUser } from "@clerk/nextjs";
 import {
