@@ -71,11 +71,15 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
   const [isVoidDialogOpen, setIsVoidDialogOpen] = useState(false);
   const [voidReason, setVoidReason] = useState("");
 
+  // console.log("pos: ", JSON.stringify(yourPOs[0].is_reconciled, null, 2));
+
   const sortedOrders = yourPOs?.sort((a, b) => {
     if (sortColumn === null) return 0;
-
+    // console.log("sortColumn: ", sortColumn);
+    // console.log("a sort: ", a["is_reconciled"]);
     //@ts-expect-error any
     const aValue = a[sortColumn];
+    // console.log("a value: ", aValue);
     //@ts-expect-error any
     const bValue = b[sortColumn];
     if (aValue < bValue) return sortDirection === "asc" ? -1 : 1;
@@ -84,7 +88,11 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
   });
 
   const handleSort = (column: string) => {
+    console.log("column: ", column);
+    // console.log("sort columnt: ", sortColumn);
     if (sortColumn === column) {
+      console.log("should sort");
+      console.log("direction: ", sortDirection);
       setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortColumn(column);
@@ -276,7 +284,13 @@ export default function PurchaseOrdersTable({ user }: { user: Id<"users"> }) {
                   </Button>
                 </TableHead>
                 <TableHead className="px-2 text-right">
-                  <Button variant="ghost">R</Button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => handleSort("is_reconciled")}
+                  >
+                    R
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                  </Button>
                 </TableHead>
                 <TableHead className="px-2 text-right">
                   <Button variant="ghost" onClick={() => handleSort("amount")}>
